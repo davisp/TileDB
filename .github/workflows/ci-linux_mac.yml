@@ -132,6 +132,10 @@ jobs:
         run: |
           set -e pipefail
 
+          #####################################################
+          # Jump to our build directory for paths
+          cd $GITHUB_WORKSPACE/build
+
           ###################################################
           # Start helper processes, such as backend emulator
           # if applicable.
