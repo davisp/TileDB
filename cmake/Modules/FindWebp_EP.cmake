@@ -30,6 +30,7 @@ include(TileDBCommon)
 if (TILEDB_VCPKG)
   find_package(Threads REQUIRED)
   find_package(WebP REQUIRED)
+  return()
 endif()
 
 if(TILEDB_WEBP_EP_BUILT)
@@ -37,7 +38,7 @@ if(TILEDB_WEBP_EP_BUILT)
 endif()
 
 # if not yet built add it as an external project
-if(NOT TILEDB_WEB_EP_BUILT)
+if(NOT TILEDB_WEBP_EP_BUILT)
   if (TILEDB_SUPERBUILD)
     message(STATUS "Adding Webp as an external project")
 
