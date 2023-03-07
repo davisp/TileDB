@@ -77,7 +77,6 @@ cloud\testing_util\CMakeLists.txt:        PUBLIC absl::symbolize absl::failure_s
 #include <cstdlib>
 #include <sstream>
 
-#include <absl/strings/str_format.h>             // absl::str_format
 #include <absl/base/casts.h>             // absl::function_ref
 #include <absl/container/fixed_array.h>  // absl::fixed_array
 #include <absl/hash/hash.h>              // absl::flat_hash_map
@@ -85,6 +84,7 @@ cloud\testing_util\CMakeLists.txt:        PUBLIC absl::symbolize absl::failure_s
 #include <absl/meta/type_traits.h>  // absl::function_ref
 #include <absl/numeric/int128.h>    // absl::numeric
 #include <absl/strings/numbers.h>
+#include <absl/strings/str_format.h>  // absl::str_format
 #include <absl/strings/string_view.h>
 #include <absl/time/clock.h>
 #include <absl/types/optional.h>  // absl::optional

@@ -27,23 +27,17 @@
 # Include some common helper functions.
 include(TileDBCommon)
 
-if (NOT TILEDB_FORCE_ALL_DEPS)
-  find_package(WebP QUIET)
+if (TILEDB_VCPKG)
+  find_package(Threads REQUIRED)
+  find_package(WebP REQUIRED)
 endif()
 
-if(NOT WebP_FOUND AND TILEDB_WEBP_EP_BUILT)
+if(TILEDB_WEBP_EP_BUILT)
   find_package(WebP REQUIRED PATHS ${TILEDB_EP_INSTALL_PREFIX} ${TILEDB_DEPS_NO_DEFAULT_PATH})
 endif()
 
-if(WebP_FOUND)
-  get_target_property(WebP_Link_Libraries WebP::webp INTERFACE_LINK_LIBRARIES)
-  if(Threads::Threads IN_LIST WebP_Link_Libraries)
-    find_package(Threads)
-  endif()
-endif()
-
 # if not yet built add it as an external project
-if(NOT WebP_FOUND)
+if(NOT TILEDB_WEB_EP_BUILT)
   if (TILEDB_SUPERBUILD)
     message(STATUS "Adding Webp as an external project")
 
