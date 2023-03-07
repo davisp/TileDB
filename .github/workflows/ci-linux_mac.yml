@@ -40,7 +40,7 @@ env:
   TILEDB_CI_OS: runner.os
   CXX: ${{ inputs.matrix_compiler_cxx }}
   CC: ${{ inputs.matrix_compiler_cc }}
-  bootstrap_args: ${{ inputs.bootstrap_args }}
+  bootstrap_args: "${{ inputs.bootstrap_args }} --enable-ccache"
 
 jobs:
   build:
@@ -65,6 +65,11 @@ jobs:
         with:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}
 
       - name: List $GITHUB_WORKSPACE before build
         run: find $GITHUB_WORKSPACE
