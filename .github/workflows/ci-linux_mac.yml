@@ -116,6 +116,12 @@ jobs:
 
           source $GITHUB_WORKSPACE/scripts/ci/bootstrap_libtiledb.sh
 
+          # Debug where in the world vcpkg is writing two
+          echo $VCPKG_DEFAULT_BINARY_CACHE
+          find $GITHUB_WORKSPACE/external/vcpkg
+          find $GITHUB_WORKSPACE/../b/
+          find ~/.cache
+
       - name: 'Build libtiledb'
         id: build
         shell: bash
