@@ -133,10 +133,6 @@ jobs:
         run: |
           set -e pipefail
 
-          #####################################################
-          # Jump to our build directory for paths
-          cd $GITHUB_WORKSPACE/build
-
           ###################################################
           # Start helper processes, such as backend emulator
           # if applicable.
@@ -146,6 +142,12 @@ jobs:
           #  **       requiring a backend emulator.         **
 
           source $GITHUB_WORKSPACE/scripts/ci/posix/build-services-start.sh
+
+          #####################################################
+          # Jump to our build directory after starting object
+          # store mock servers
+
+          cd $GITHUB_WORKSPACE/build
 
           ###################################################
           # Run tests
