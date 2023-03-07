@@ -103,7 +103,7 @@ jobs:
           set -e pipefail
           brew install automake pkg-config
 
-      - name: 'Configure libtiledb build'
+      - name: 'Configure libtiledb'
         id: configure
         shell: bash
         run: |
@@ -115,8 +115,19 @@ jobs:
 
           source $GITHUB_WORKSPACE/scripts/ci/bootstrap_libtiledb.sh
 
-      - name: 'Build and test libtiledb'
-        id: build_and_test
+      - name: 'Build libtiledb'
+        id: build
+        shell: bash
+        run: |
+          set -e pipefail
+
+          #####################################################
+          # Build libtiledb using previous bootstrap
+
+          source $GITHUB_WORKSPACE/scripts/ci/build_libtiledb.sh
+
+      - name: 'Test libtiledb'
+        id: test
         shell: bash
         run: |
           set -e pipefail
@@ -130,12 +141,6 @@ jobs:
           #  **       requiring a backend emulator.         **
 
           source $GITHUB_WORKSPACE/scripts/ci/posix/build-services-start.sh
-
-          #####################################################
-          # Build libtiledb using bootstrap set above
-
-          source $GITHUB_WORKSPACE/scripts/ci/bootstrap_libtiledb.sh
-          source $GITHUB_WORKSPACE/scripts/ci/build_libtiledb.sh
 
           ###################################################
           # Run tests
