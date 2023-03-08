@@ -63,13 +63,13 @@ jobs:
         uses: lukka/run-vcpkg@v10
         id: runvcpkg
         with:
-          runVcpkgInstall: false
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
-          prependedCacheKey: 'cache-vsn-1' # We ended up with a cache of nothing that run-vcpkg won't replace
+          binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
+          prependedCacheKey: 'cache-vsn-2' # We ended up with a cache of nothing that run-vcpkg won't replace
 
       - name: show-vcpkg-cache
-        run: find $GITHUB_WORKSPACE/../b/
+        run: find $GITHUB_WORKSPACE/external/vcpkg_cache
         shell: bash
 
       - name: ccache
