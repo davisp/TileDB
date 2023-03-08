@@ -64,7 +64,8 @@ jobs:
         shell: bash
 
       - name: Show bootstrap args hash
-        run: echo "${{ hashFiles('bootstrap.args') }}"
+        id: xkcd_do_thing
+        run: echo "::set-output name=xkcd_cache_key::${{ hashFiles('bootstrap.args') }}"
         shell: bash
 
       - name: Create vcpkg_cache directory
@@ -78,7 +79,7 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
           binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
-          prependedCacheKey: "_tiledb-${{ hashFiles('bootsrap.args') }}"
+          prependedCacheKey: "tiledb-${{steps.xkcd_do_thing.outputs.xkcd_cache_key}}"
 
       - name: show-vcpkg-cache
         run: find $GITHUB_WORKSPACE/external/vcpkg_cache
@@ -87,7 +88,7 @@ jobs:
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ github.job }}-${{ matrix.os }}-${{ hashFiles('bootsrap.args') }}
+          key: ${{ github.job }}-${{ matrix.os }}-${{ steps.xkcd_do_thing.outputs.xkcd_cache_key }}
 
       - name: List $GITHUB_WORKSPACE before build
         run: find $GITHUB_WORKSPACE
