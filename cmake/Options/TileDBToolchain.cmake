@@ -28,7 +28,7 @@ else()
         CACHE STRING "Vcpkg toolchain file")
 endif()
 
-set(VCPKG_INSTALL_OPTIONS "--no-print-usage --debug")
+set(VCPKG_INSTALL_OPTIONS "--debug")
 
 macro(tiledb_vcpkg_enable_if tiledb_feature vcpkg_feature)
     if(${tiledb_feature})
