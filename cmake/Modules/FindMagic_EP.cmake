@@ -59,6 +59,12 @@ if(TILEDB_VCPKG)
     INTERFACE_INCLUDE_DIRECTORIES "${libmagic_INCLUDE_DIR}"
   )
 
+  # Some GitHub builders were finding a system installed liblzma when
+  # building the libmagic port. Rather than fight the issue we just force
+  # liblzma support everywhere.
+  find_package(liblzma CONFIG REQUIRED)
+  target_link_libraries(libmagic INTERFACE liblzma::liblzma)
+
   return()
 endif()
 
