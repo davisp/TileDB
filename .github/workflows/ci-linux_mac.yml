@@ -59,6 +59,10 @@ jobs:
             submodules: true
             fetch-depth: 0
 
+      - name: Create hashable build file
+        run: echo "${bootstrap_args}" > $GITHUB_WORKSPACE/bootstrap.args
+        shell: bash
+
       - name: Create vcpkg_cache directory
         run: mkdir -p $GITHUB_WORKSPACE/external/vcpkg_cache
         shell: bash
@@ -70,7 +74,7 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
           binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
-          prependedCacheKey: 'cache-vsn-2' # We ended up with a cache of nothing that run-vcpkg won't replace
+          prependedCacheKey: ${{ hashFiles("bootstrap.args") }}
 
       - name: show-vcpkg-cache
         run: find $GITHUB_WORKSPACE/external/vcpkg_cache
@@ -79,7 +83,7 @@ jobs:
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ github.job }}-${{ matrix.os }}
+          key: ${{ github.job }}-${{ matrix.os }}-${{ hashFiles("bootstrap.args") }}
 
       - name: List $GITHUB_WORKSPACE before build
         run: find $GITHUB_WORKSPACE
