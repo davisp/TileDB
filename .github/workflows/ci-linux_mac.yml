@@ -82,7 +82,7 @@ jobs:
           prependedCacheKey: "tiledb-${{steps.xkcd_do_thing.outputs.xkcd_cache_key}}"
 
       - name: show-vcpkg-cache
-        run: find $GITHUB_WORKSPACE/external/vcpkg_cache
+        run: find $GITHUB_WORKSPACE/external/vcpkg_cache -type f | sort
         shell: bash
 
       - name: ccache
