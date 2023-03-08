@@ -99,13 +99,14 @@ jobs:
             -source "https://nuget.pkg.github.com/davisp/index.json"
 
       # Trying this answer: https://stackoverflow.com/a/70450362
+      # Not that they had the commands right...
       - name: 'Reload NuGet Credentials - HACK'
         shell: 'bash'
         run: |
           mono `${GITHUB_WORKSPACE}/external/vcpkg/vcpkg fetch nuget | tail -n 1` \
-            disable source GitHub
+            sources Disable -Name GitHub
           mono `${GITHUB_WORKSPACE}/external/vcpkg/vcpkg fetch nuget | tail -n 1` \
-            enable source GitHub
+            sources Enable -Name GitHub
 
       - name: 'Ubuntu Prelim'
         if: ${{ startsWith(matrix.os, 'ubuntu-') == true }}
