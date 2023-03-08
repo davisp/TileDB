@@ -27,6 +27,9 @@ concurrency:
   group: ${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+permissions:
+  packages: write
+
 ## NOTE: the job names below must be unique!
 jobs:
   ci1:
