@@ -40,7 +40,7 @@ env:
   TILEDB_CI_OS: runner.os
   CXX: ${{ inputs.matrix_compiler_cxx }}
   CC: ${{ inputs.matrix_compiler_cc }}
-  bootstrap_args: "${{ inputs.bootstrap_args }} --enable-ccache"
+  bootstrap_args: "${{ inputs.bootstrap_args }}"
 
 jobs:
   build:
