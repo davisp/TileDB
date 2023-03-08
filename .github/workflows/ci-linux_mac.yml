@@ -79,7 +79,7 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
           binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
-          prependedCacheKey: "tiledb-${{steps.xkcd_do_thing.outputs.xkcd_cache_key}}"
+          prependedCacheKey: "tiledb-1-${{steps.xkcd_do_thing.outputs.xkcd_cache_key}}"
 
       - name: show-vcpkg-cache
         run: find $GITHUB_WORKSPACE/external/vcpkg_cache -type f | sort
@@ -94,7 +94,10 @@ jobs:
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}' "
 
       - name: Work around vcpkg default # https://github.com/microsoft/vcpkg/issues/143#issuecomment-705778244 ¯\_(ツ)_/¯
-        run:  find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \;
+        run: |
+          [ ! -f $$GITHUB_WORKSPACE/external/vcpkg/TRIPLETS_PATCHED ] && find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \;
+          touch $GITHUB_WORKSPACE/external/vcpkg/TRIPLETS_PATCHED
+        shell: bash
 
       - name: Show triplets
         run: find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec cat {} \;
