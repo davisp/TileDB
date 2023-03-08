@@ -59,13 +59,11 @@ jobs:
             submodules: true
             fetch-depth: 0
 
-      - name: Create hashable build file
-        run: echo "${bootstrap_args}" > $GITHUB_WORKSPACE/bootstrap.args
-        shell: bash
-
-      - name: Show bootstrap args hash
-        id: xkcd_do_thing
-        run: echo "::set-output name=xkcd_cache_key::${{ hashFiles('bootstrap.args') }}"
+      - name: Calculate bootstrap cache key
+        id: bootstrap_cache_key
+        run: |
+          echo "${bootstrap_args}" > $GITHUB_WORKSPACE/bootstrap.args
+          echo "::set-output name=key::${{ hashFiles('bootstrap.args') }}"
         shell: bash
 
       - name: Create vcpkg_cache directory
@@ -79,31 +77,22 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
           binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
-          prependedCacheKey: "tiledb-2-${{steps.xkcd_do_thing.outputs.xkcd_cache_key}}"
-
-      - name: show-vcpkg-cache
-        run: find $GITHUB_WORKSPACE/external/vcpkg_cache -type f | sort
-        shell: bash
-
-      - name: ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ github.job }}-${{ matrix.os }}-${{ steps.xkcd_do_thing.outputs.xkcd_cache_key }}
+          prependedCacheKey: "tiledb-2-${{steps.bootstrap_cache_key.outputs.key}}"
 
       - name: Prints output of run-vcpkg's action.
-        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}' "
-
-      - name: Work around vcpkg default # https://github.com/microsoft/vcpkg/issues/143#issuecomment-705778244 ¯\_(ツ)_/¯
         run: |
-          [ -z "$(ls -A $GITHUB_WORKSPACE/external/vcpkg_cache)" ] && find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \; && echo "Triplets patched" || true
-        shell: bash
+          echo "VCPKG_ROOT='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}'"
+          echo "VCPKG_TRIPLET='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
 
-      - name: show-vcpkg-cache-middle
-        run: find $GITHUB_WORKSPACE/external/vcpkg_cache -type f | sort
-        shell: bash
-
-      - name: Show triplets
-        run: find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec cat {} \;
+      # https://github.com/microsoft/vcpkg/issues/143#issuecomment-705778244 ¯\_(ツ)_/¯
+      - name: Work around vcpkg default
+        run: |
+          if [ -z "$(ls -A $GITHUB_WORKSPACE/external/vcpkg_cache)" ]
+          then
+            find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f \
+              -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \;
+            echo "Triplets patched"
+          fi
         shell: bash
 
       - name: 'Ubuntu Prelim'
@@ -117,6 +106,7 @@ jobs:
         with:
           python-version: '3.8'
           cache: 'pip'
+
       - name: 'Set up Python dependencies'
         run: |
           set -e pipefail
@@ -140,10 +130,6 @@ jobs:
           # cache vcpkg deps across runs if the libtiledb build fails.
 
           source $GITHUB_WORKSPACE/scripts/ci/bootstrap_libtiledb.sh
-
-      - name: show-vcpkg-cache-again
-        run: find $GITHUB_WORKSPACE/external/vcpkg_cache -type f | sort
-        shell: bash
 
       - name: 'Build libtiledb'
         id: build
