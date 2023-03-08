@@ -92,8 +92,13 @@ jobs:
 
       - name: Prints output of run-vcpkg's action.
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}' "
+
       - name: Work around vcpkg default # https://github.com/microsoft/vcpkg/issues/143#issuecomment-705778244 ¯\_(ツ)_/¯
         run:  find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \;
+
+      - name: Show triplets
+        run: find /Users/davisp/github/microsoft/vcpkg/triplets/* -type f -exec cat {} \;
+        shell: bash
 
       - name: 'Ubuntu Prelim'
         if: ${{ startsWith(matrix.os, 'ubuntu-') == true }}
