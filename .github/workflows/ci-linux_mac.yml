@@ -35,6 +35,7 @@ on:
         type: number
 
 env:
+  VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
   BACKWARDS_COMPATIBILITY_ARRAYS: OFF
   TILEDB_CI_BACKEND: ${{ inputs.ci_backend }}
   TILEDB_CI_OS: runner.os
@@ -59,25 +60,12 @@ jobs:
             submodules: true
             fetch-depth: 0
 
-      - name: Calculate bootstrap cache key
-        id: bootstrap_cache_key
-        run: |
-          echo "${bootstrap_args}" > $GITHUB_WORKSPACE/bootstrap.args
-          echo "::set-output name=key::${{ hashFiles('bootstrap.args') }}"
-        shell: bash
-
-      - name: Create vcpkg_cache directory
-        run: mkdir -p $GITHUB_WORKSPACE/external/vcpkg_cache
-        shell: bash
-
       - name: Restore artifacts, or setup vcpkg for building artifacts
         uses: lukka/run-vcpkg@v10
         id: runvcpkg
         with:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
-          binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
-          prependedCacheKey: "tiledb-2-${{steps.bootstrap_cache_key.outputs.key}}"
 
       - name: Prints output of run-vcpkg's action.
         run: |
@@ -94,6 +82,21 @@ jobs:
             echo "Triplets patched"
           fi
         shell: bash
+
+      # This step assumes `vcpkg` has been bootstrapped (run `./vcpkg/bootstrap-vcpkg`)
+      - name: 'Setup NuGet Credentials'
+        shell: 'bash'
+        run: |
+          mono `./vcpkg/vcpkg fetch nuget | tail -n 1` \
+            sources add \
+            -source "https://nuget.pkg.github.com/davisp/index.json" \
+            -storepasswordincleartext \
+            -name "GitHub" \
+            -username "davisp" \
+            -password "${{ secrets.GITHUB_TOKEN }}"
+          mono `./vcpkg/vcpkg fetch nuget | tail -n 1` \
+            setapikey "${{ secrets.GITHUB_TOKEN }}" \
+            -source "https://nuget.pkg.github.com/davisp/index.json"
 
       - name: 'Ubuntu Prelim'
         if: ${{ startsWith(matrix.os, 'ubuntu-') == true }}
