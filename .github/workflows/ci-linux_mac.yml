@@ -63,6 +63,10 @@ jobs:
         run: echo "${bootstrap_args}" > $GITHUB_WORKSPACE/bootstrap.args
         shell: bash
 
+      - name: Show bootstrap args hash
+        run: echo "${{ hashFiles('bootstrap.args') }}"
+        shell: bash
+
       - name: Create vcpkg_cache directory
         run: mkdir -p $GITHUB_WORKSPACE/external/vcpkg_cache
         shell: bash
@@ -74,7 +78,7 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
           binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
-          prependedCacheKey: ${{ hashFiles('bootsrap.args') }}
+          prependedCacheKey: "_tiledb-${{ hashFiles('bootsrap.args') }}"
 
       - name: show-vcpkg-cache
         run: find $GITHUB_WORKSPACE/external/vcpkg_cache
