@@ -79,7 +79,7 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
           binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
-          prependedCacheKey: "tiledb-1-${{steps.xkcd_do_thing.outputs.xkcd_cache_key}}"
+          prependedCacheKey: "tiledb-2-${{steps.xkcd_do_thing.outputs.xkcd_cache_key}}"
 
       - name: show-vcpkg-cache
         run: find $GITHUB_WORKSPACE/external/vcpkg_cache -type f | sort
@@ -95,8 +95,7 @@ jobs:
 
       - name: Work around vcpkg default # https://github.com/microsoft/vcpkg/issues/143#issuecomment-705778244 ¯\_(ツ)_/¯
         run: |
-          [ ! -f $$GITHUB_WORKSPACE/external/vcpkg_cache/TRIPLETS_PATCHED ] && find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \; && echo "Triplets patched"
-          touch $GITHUB_WORKSPACE/external/vcpkg_cache/TRIPLETS_PATCHED
+          [ -z "$(ls -A $GITHUB_WORKSPACE/exteral/vcpkg_cache)" ] && find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \; && echo "Triplets patched"
         shell: bash
 
       - name: show-vcpkg-cache-middle
