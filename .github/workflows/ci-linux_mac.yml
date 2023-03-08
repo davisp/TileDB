@@ -59,6 +59,10 @@ jobs:
             submodules: true
             fetch-depth: 0
 
+      - name: Create vcpkg_cache directory
+        run: mkdir -p $GITHUB_WORKSPACE/external/vcpkg_cache
+        shell: bash
+
       - name: Restore artifacts, or setup vcpkg for building artifacts
         uses: lukka/run-vcpkg@v10
         id: runvcpkg
