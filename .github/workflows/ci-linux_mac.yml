@@ -63,9 +63,14 @@ jobs:
         uses: lukka/run-vcpkg@v10
         id: runvcpkg
         with:
+          runVcpkgInstall: false
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
           prependedCacheKey: 'cache-vsn-1' # We ended up with a cache of nothing that run-vcpkg won't replace
+
+      - name: show-vcpkg-cache
+        run: find $GITHUB_WORKSPACE/../b/
+        shell: bash
 
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2
@@ -115,12 +120,6 @@ jobs:
           # cache vcpkg deps across runs if the libtiledb build fails.
 
           source $GITHUB_WORKSPACE/scripts/ci/bootstrap_libtiledb.sh
-
-          # Debug where in the world vcpkg is writing two
-          echo $VCPKG_DEFAULT_BINARY_CACHE
-          find $GITHUB_WORKSPACE/external/vcpkg
-          find $GITHUB_WORKSPACE/../b/
-          find ~/.cache
 
       - name: 'Build libtiledb'
         id: build
