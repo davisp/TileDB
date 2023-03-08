@@ -95,7 +95,7 @@ jobs:
 
       - name: Work around vcpkg default # https://github.com/microsoft/vcpkg/issues/143#issuecomment-705778244 ¯\_(ツ)_/¯
         run: |
-          [ -z "$(ls -A $GITHUB_WORKSPACE/exteral/vcpkg_cache)" ] && find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \; && echo "Triplets patched"
+          [ -z "$(ls -A $GITHUB_WORKSPACE/external/vcpkg_cache)" ] && find $GITHUB_WORKSPACE/external/vcpkg/triplets/* -type f -exec sh -c "echo \"\nset(VCPKG_BUILD_TYPE release)\n\" >> {}" \; && echo "Triplets patched"
         shell: bash
 
       - name: show-vcpkg-cache-middle
