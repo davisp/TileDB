@@ -98,6 +98,27 @@ jobs:
             setapikey "${{ secrets.GITHUB_TOKEN }}" \
             -source "https://nuget.pkg.github.com/davisp/index.json"
 
+      - name: 'List NuGet Sources'
+        shell: 'bash'
+        run: |
+          mono `${GITHUB_WORKSPACE}/external/vcpkg/vcpkg fetch nuget | tail -n 1` \
+            list source
+
+      # Trying this answer: https://stackoverflow.com/a/70450362
+      - name: 'Reload NuGet Credentials - HACK'
+        shell: 'bash'
+        run: |
+          mono `${GITHUB_WORKSPACE}/external/vcpkg/vcpkg fetch nuget | tail -n 1` \
+            disable source GitHub
+          mono `${GITHUB_WORKSPACE}/external/vcpkg/vcpkg fetch nuget | tail -n 1` \
+            enable source GitHub
+
+      - name: 'List NuGet Sources'
+        shell: 'bash'
+        run: |
+         mono `${GITHUB_WORKSPACE}/external/vcpkg/vcpkg fetch nuget | tail -n 1` \
+            list source
+
       - name: 'Ubuntu Prelim'
         if: ${{ startsWith(matrix.os, 'ubuntu-') == true }}
         run: ./scripts/ci/posix/prelim.sh
