@@ -74,7 +74,7 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
           vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
           binaryCachePath: '${{ github.workspace }}/external/vcpkg_cache'
-          prependedCacheKey: ${{ hashFiles("bootstrap.args") }}
+          prependedCacheKey: 'foo'
 
       - name: show-vcpkg-cache
         run: find $GITHUB_WORKSPACE/external/vcpkg_cache
@@ -83,7 +83,7 @@ jobs:
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ github.job }}-${{ matrix.os }}-${{ hashFiles("bootstrap.args") }}
+          key: ${{ github.job }}-${{ matrix.os }}-foo
 
       - name: List $GITHUB_WORKSPACE before build
         run: find $GITHUB_WORKSPACE
