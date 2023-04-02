@@ -19,7 +19,9 @@ pr:
 
 variables:
   - name: MANYLINUX_IMAGE
-    value: quay.io/pypa/manylinux2014_x86_64:2022-11-06-7be974c
+    #value: quay.io/pypa/manylinux2014_x86_64:2022-11-06-7be974c
+    # modified from above tag to add linux-headers
+    value: ghcr.io/ihnorton/tiledb-manylinux2014_x86_64:2023-03-23-aead4d7
 
 stages:
   - stage: CI
