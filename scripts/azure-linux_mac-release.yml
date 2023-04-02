@@ -116,7 +116,7 @@ steps:
   continueOnError: true
 
 - bash: |
-    cat $BUILD_REPOSITORY_LOCALPATH/build/vcpkg-bootstrap.log
+    cat $BUILD_REPOSITORY_LOCALPATH/build/vcpkg-bootstrap.log || true
   displayName: 'Dump vcpkg logs'
   continueOnError: true
 
