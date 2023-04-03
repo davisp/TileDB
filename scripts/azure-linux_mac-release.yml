@@ -15,14 +15,15 @@ steps:
     echo "vcpkg is: " $(which vcpkg || true)
   displayName: 'Print env'
 
-- bash: |
-    # This stage is needed until https://github.com/actions/runner-images/pull/7125 or similar is merged
-    # MacOS image 20230214.1 removed implicit installation of pkg-config
-    set -e pipefail
-    brew install pkg-config
-  condition: eq(variables['Agent.OS'], 'Darwin')
-  displayName: 'Install pkg-config, remove incompatible SDKs (OSX only)'
 
+#- bash: |
+#    # This stage is needed until https://github.com/actions/runner-images/pull/7125 or similar is merged
+#    # MacOS image 20230214.1 removed implicit installation of pkg-config
+#    set -e pipefail
+#    brew install pkg-config
+#  condition: eq(variables['Agent.OS'], 'Darwin')
+#  displayName: 'Install pkg-config, remove incompatible SDKs (OSX only)'
+#
 #- bash: |
 #    curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
 #    bin/micromamba create -p $HOME/m -y
