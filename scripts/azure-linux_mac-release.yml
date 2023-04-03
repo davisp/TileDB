@@ -23,13 +23,13 @@ steps:
   condition: eq(variables['Agent.OS'], 'Darwin')
   displayName: 'Install pkg-config, remove incompatible SDKs (OSX only)'
 
-- bash: |
-    curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
-    bin/micromamba create -p $HOME/m -y
-    bin/micromamba -p $HOME/m install -y -c conda-forge zip tar unzip
-    echo '##vso[task.prependpath]$(HOME)/m/bin'
-  condition: eq(variables['Agent.OS'], 'Linux')
-  displayName: 'Install vcpkg dependencies (Linux only)'
+#- bash: |
+#    curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+#    bin/micromamba create -p $HOME/m -y
+#    bin/micromamba -p $HOME/m install -y -c conda-forge zip tar unzip
+#    echo '##vso[task.prependpath]$(HOME)/m/bin'
+#  condition: eq(variables['Agent.OS'], 'Linux')
+#  displayName: 'Install vcpkg dependencies (Linux only)'
 
 - bash: |
     export PATH=$HOME/m/bin:$PATH
