@@ -35,6 +35,7 @@
 include(TileDBCommon)
 
 if(TILEDB_VCPKG)
+  set(CMAKE_FIND_DEBUG_MODE TRUE)
   find_path(libmagic_INCLUDE_DIR NAMES magic.h)
   find_library(libmagic_LIBRARIES magic)
   find_file(libmagic_DICTIONARY magic.mgc
@@ -67,6 +68,7 @@ if(TILEDB_VCPKG)
   find_package(liblzma CONFIG REQUIRED)
   target_link_libraries(libmagic INTERFACE liblzma::liblzma)
 
+  set(CMAKE_FIND_DEBUG_MODE FALSE)
   return()
 endif()
 
