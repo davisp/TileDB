@@ -1,7 +1,7 @@
 {
   "name": "file-windows",
   "version-string": "5.38.2.tiledb",
-  "port-version": 1,
+  "port-version": 0,
   "description": "Multi-OS version of file/libmagic",
   "homepage": "https://github.com/TileDB-Inc/file-windows",
   "license": "MIT",

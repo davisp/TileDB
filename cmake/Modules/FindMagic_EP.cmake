@@ -35,40 +35,12 @@
 include(TileDBCommon)
 
 if(TILEDB_VCPKG)
-  set(CMAKE_FIND_DEBUG_MODE TRUE)
-  find_path(libmagic_INCLUDE_DIR NAMES magic.h)
-  find_library(libmagic_LIBRARIES magic)
+  find_package(libmagic REQUIRED)
   find_file(libmagic_DICTIONARY magic.mgc
     PATH_SUFFIXES
-      share/file-windows/misc
       share/libmagic/misc
   )
-
-  include(FindPackageHandleStandardArgs)
-  FIND_PACKAGE_HANDLE_STANDARD_ARGS(libmagic
-    REQUIRED_VARS
-      libmagic_INCLUDE_DIR
-      libmagic_LIBRARIES
-      libmagic_DICTIONARY
-  )
-
-  if(NOT libmagic_FOUND)
-    message(FATAL "Error finding libmagic")
-  endif()
-
-  add_library(libmagic UNKNOWN IMPORTED)
-  set_target_properties(libmagic PROPERTIES
-    IMPORTED_LOCATION "${libmagic_LIBRARIES}"
-    INTERFACE_INCLUDE_DIRECTORIES "${libmagic_INCLUDE_DIR}"
-  )
-
-  # Some GitHub builders were finding a system installed liblzma when
-  # building the libmagic port. Rather than fight the issue we just force
-  # liblzma support everywhere.
-  find_package(liblzma CONFIG REQUIRED)
-  target_link_libraries(libmagic INTERFACE liblzma::liblzma)
-
-  set(CMAKE_FIND_DEBUG_MODE FALSE)
+  add_library(libmagic ALIAS magic)
   return()
 endif()
 

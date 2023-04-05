@@ -70,6 +70,7 @@ vcpkg_configure_cmake(
 
 vcpkg_install_cmake(ADD_BIN_TO_PATH)
 vcpkg_copy_pdbs()
+
 vcpkg_install_copyright(
   FILE_LIST
     ${SOURCE_PATH}/LICENSE
@@ -91,16 +92,23 @@ endif()
 
 # Fixup the rest of the release build
 file(
-  COPY "${CURRENT_PACKAGES_DIR}/lib/cmake"
-  DESTINATION "${CURRENT_PACKAGES_DIR}/share/file-windows"
+  COPY "${CURRENT_PACKAGES_DIR}/lib/cmake/libmagic"
+  DESTINATION "${CURRENT_PACKAGES_DIR}/share/cmake"
 )
 
-# Move the magic.mgc file to share/file-windows/misc
-file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/share/file-windows/misc")
+file(
+  COPY "${CURRENT_PACKAGES_DIR}/lib/cmake/pcre2"
+  DESTINATION "${CURRENT_PACKAGES_DIR}/share/cmake"
+)
+
+# Move the magic.mgc file to share/libmagic/misc
+file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/share/libmagic/misc")
 file(
   COPY "${CURRENT_PACKAGES_DIR}/bin/magic.mgc"
-  DESTINATION "${CURRENT_PACKAGES_DIR}/share/file-windows/misc"
+  DESTINATION "${CURRENT_PACKAGES_DIR}/share/libmagic/misc"
 )
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib/cmake")
+
+#fooba
