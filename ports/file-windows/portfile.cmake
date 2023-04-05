@@ -2,6 +2,7 @@
 # https://github.com/jlblancoc/vcpkg/blob/2952bcc6c596f0b6b880595c6728c711826cb0aa/ports/mrpt/portfile.cmake
 
 set(TARGET_GIT_URL "https://github.com/TileDB-Inc/file-windows.git")
+set(TARGET_GIT_SHA "5.38.2.tiledb")
 
 set(PACKAGE_CHECKOUT_DIR "src")
 set(SOURCE_PATH ${CURRENT_BUILDTREES_DIR}/${PACKAGE_CHECKOUT_DIR})
