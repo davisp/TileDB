@@ -71,7 +71,6 @@ if(VCPKG_TARGET_IS_WINDOWS)
 vcpkg_execute_build_process(
     COMMAND
         "${CMAKE_COMMAND}" --build . --config "Debug" --target install
-        -- -verbosity:diagnostic
     WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg}"
     LOGNAME "xkcd-${TARGET_TRIPLET}-dbg"
 )
