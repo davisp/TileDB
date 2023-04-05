@@ -67,6 +67,16 @@ vcpkg_configure_cmake(
         -Dlibmagic_STATIC_LIB=ON
 )
 
+if(VCPKG_TARGET_IS_WINDOWS)
+vcpkg_execute_build_process(
+    COMMAND
+        "${CMAKE_COMMAND}" --build . --config "Debug" --target install
+        -- -verbosity:diagnostic
+    WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg}"
+    LOGNAME "xkcd-${TARGET_TRIPLET}-dbg"
+)
+endif()
+
 vcpkg_install_cmake(ADD_BIN_TO_PATH)
 vcpkg_copy_pdbs()
 vcpkg_install_copyright(
