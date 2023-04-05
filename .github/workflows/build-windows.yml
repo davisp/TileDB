@@ -426,3 +426,9 @@ jobs:
             echo TILEDB_CI_SUCCESS != 1, exiting.
             exit 1;
           fi
+
+      - name: "Print log files (failed build only)"
+        shell: bash
+        run: |
+          source $GITHUB_WORKSPACE/scripts/ci/print_logs.sh
+        if: ${{ failure() }} # only run this job if the build step failed
