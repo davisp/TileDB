@@ -119,6 +119,24 @@ void dimension_label_to_capnp(
 shared_ptr<DimensionLabel> dimension_label_from_capnp(
     const capnp::DimensionLabel::Reader& reader);
 
+/**
+ * Serialize an Enumeration do cap'n proto object
+ *
+ * @param enumeration Enumeration to serialize.
+ * @param builder Cap'n proto class.
+ */
+void enumeration_to_capnp(
+    shared_ptr<const Enumeration>, capnp::Enumeration::Builder& enm_builder);
+
+/**
+ * Deserialize a dimension label from a cap'n proto object
+ *
+ * @param reader Cap'n proto reader object
+ * @return A new Enumeration
+ */
+shared_ptr<const Enumeration> enumeration_from_capnp(
+    const capnp::Enumeration::Reader& reader);
+
 #endif  // TILEDB_SERIALIZATION
 
 /**

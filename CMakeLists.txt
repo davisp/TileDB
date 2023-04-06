@@ -219,7 +219,12 @@ else()
   elseif (CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
     add_compile_options(-DNDEBUG -O3 -g3 -ggdb3 -gdwarf-3)
   elseif (CMAKE_BUILD_TYPE MATCHES "Coverage")
-    add_compile_options(-DDEBUG -g3 -gdwarf-3 --coverage)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+      add_compile_options(-DDEBUG -O0 -g3 --coverage -fprofile-instr-generate -fcoverage-mapping)
+      add_link_options(--coverage -fprofile-instr-generate -fcoverage-mapping)
+    else()
+      add_compile_options(-DDEBUG -g3 -gdwarf-3 --coverage)
+    endif()
   endif()
 
   # Use -Wno-literal-suffix on Linux with C++ sources.
@@ -341,6 +346,7 @@ list(APPEND TILEDB_C_API_RELATIVE_HEADERS
     "${CMAKE_SOURCE_DIR}/tiledb/api/c_api/datatype/datatype_api_external.h"
     "${CMAKE_SOURCE_DIR}/tiledb/api/c_api/dimension/dimension_api_external.h"
     "${CMAKE_SOURCE_DIR}/tiledb/api/c_api/dimension_label/dimension_label_api_external.h"
+    "${CMAKE_SOURCE_DIR}/tiledb/api/c_api/enumeration/enumeration_api_experimental.h"
     "${CMAKE_SOURCE_DIR}/tiledb/api/c_api/error/error_api_external.h"
     "${CMAKE_SOURCE_DIR}/tiledb/api/c_api/filesystem/filesystem_api_enum.h"
     "${CMAKE_SOURCE_DIR}/tiledb/api/c_api/filesystem/filesystem_api_external.h"

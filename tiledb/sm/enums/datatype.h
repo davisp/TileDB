@@ -332,6 +332,39 @@ inline bool datatype_is_integer(Datatype type) {
       type == Datatype::INT64 || type == Datatype::UINT64);
 }
 
+inline uint64_t datatype_max_integral_value(Datatype type) {
+  // There's a lack of symmetry between this function and datatype_is_integer
+  // because the latter considers Datatype::BLOB an integer even though the
+  // C++ docs specifically state that it is not an arithmetic type.
+  //
+  // From https://en.cppreference.com/w/cpp/types/byte
+  //   "it is not a character type and is not an arithmetic type"
+  //
+  switch (type) {
+    case Datatype::BOOL:
+      return static_cast<uint64_t>(std::numeric_limits<uint8_t>::max());
+    case Datatype::INT8:
+      return static_cast<uint64_t>(std::numeric_limits<int8_t>::max());
+    case Datatype::UINT8:
+      return static_cast<uint64_t>(std::numeric_limits<uint8_t>::max());
+    case Datatype::INT16:
+      return static_cast<uint64_t>(std::numeric_limits<int16_t>::max());
+    case Datatype::UINT16:
+      return static_cast<uint64_t>(std::numeric_limits<uint16_t>::max());
+    case Datatype::INT32:
+      return static_cast<uint64_t>(std::numeric_limits<int32_t>::max());
+    case Datatype::UINT32:
+      return static_cast<uint64_t>(std::numeric_limits<uint32_t>::max());
+    case Datatype::INT64:
+      return static_cast<uint64_t>(std::numeric_limits<int64_t>::max());
+    case Datatype::UINT64:
+      return static_cast<uint64_t>(std::numeric_limits<uint64_t>::max());
+    default:
+      throw std::runtime_error(
+          "Datatype (" + datatype_str(type) + ") is not integral.");
+  }
+}
+
 /** Returns true if the input datatype is a real type. */
 inline bool datatype_is_real(Datatype type) {
   return (type == Datatype::FLOAT32 || type == Datatype::FLOAT64);
