@@ -43,3 +43,6 @@ for f in $(find $GITHUB_WORKSPACE/build/externals -name *.cmake);
     cat $f
     echo "::endgroup::"
   done;
+
+# List files in externsl on error
+find $GITHUB_WORKSPACE/build/externals | sort
