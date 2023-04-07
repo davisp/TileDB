@@ -84,6 +84,8 @@ if(NOT TILEDB_WEBP_EP_BUILT)
   endif()
 endif()
 
+message("XKCD: ${WebP_LIBRARIES}")
+
 # Always building static EP, install it..
 if (TILEDB_WEBP_EP_BUILT)
   # One install_target_libs() with all of these was only installing the first item.
