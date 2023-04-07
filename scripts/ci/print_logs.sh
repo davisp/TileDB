@@ -35,3 +35,11 @@ for f in $(find $GITHUB_WORKSPACE/{build,external} -name *.log);
     echo "::endgroup::"
   done;
 
+# Display log files if the build failed
+echo "Dumping CMake files for failed build"
+for f in $(find $GITHUB_WORKSPACE/build/externals -name *.cmake);
+  do
+    echo "::group::$f"
+    cat $f
+    echo "::endgroup::"
+  done;
