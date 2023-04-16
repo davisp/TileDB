@@ -504,16 +504,20 @@ endif()
 # S3 dependencies
 if (TILEDB_S3)
   message(STATUS "The TileDB library is compiled with S3 support.")
-  find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
+  #find_package(AWSSDK_EP REQUIRED COMPONENTS s3)
+  #target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
+  #  INTERFACE
+  #    AWSSDK::aws-cpp-sdk-s3
+  #    AWSSDK::aws-cpp-sdk-core
+  #    AWSSDK::aws-c-event-stream
+  #    AWSSDK::aws-checksums
+  #    AWSSDK::aws-c-common
+  #    AWSSDK::aws-cpp-sdk-identity-management
+  #    AWSSDK::aws-cpp-sdk-sts)
+  find_package(AWSSDK REQUIRED COMPONENTS s3 identity-management sts)
   target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
     INTERFACE
-      AWSSDK::aws-cpp-sdk-s3
-      AWSSDK::aws-cpp-sdk-core
-      AWSSDK::aws-c-event-stream
-      AWSSDK::aws-checksums
-      AWSSDK::aws-c-common
-      AWSSDK::aws-cpp-sdk-identity-management
-      AWSSDK::aws-cpp-sdk-sts)
+    ${AWSSDK_LINK_LIBRARIES})
 endif()
 
 # Azure dependencies
