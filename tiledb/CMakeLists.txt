@@ -510,10 +510,13 @@ if (TILEDB_S3)
       AWSSDK::aws-cpp-sdk-s3
       AWSSDK::aws-cpp-sdk-core
       AWSSDK::aws-c-event-stream
+      AWSSDK::aws-c-io
+      AWSSDK::aws-c-cal
       AWSSDK::aws-checksums
       AWSSDK::aws-c-common
       AWSSDK::aws-cpp-sdk-identity-management
-      AWSSDK::aws-cpp-sdk-sts)
+      AWSSDK::aws-cpp-sdk-sts
+      AWS::s2n)
 endif()
 
 # Azure dependencies

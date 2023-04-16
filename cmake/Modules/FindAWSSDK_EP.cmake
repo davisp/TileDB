@@ -36,6 +36,7 @@ if(TILEDB_VCPKG)
   set(AWS_SERVICES s3)
   AWSSDK_DETERMINE_LIBS_TO_LINK(AWS_SERVICES AWS_LINKED_LIBS)
   list(APPEND AWS_LINKED_LIBS aws-c-cal
+                              aws-c-event-stream
                               aws-c-io
                               aws-cpp-sdk-identity-management
                               aws-cpp-sdk-sts)
