@@ -505,13 +505,8 @@ class Config {
    * - `vfs.azure.storage_account_key` <br>
    *    Set the Azure Storage Account key. <br>
    *    **Default**: ""
-   * - `vfs.azure.storage_sas_token` <br>
-   *    Set the Azure Storage SAS (shared access signature) token. <br>
-   *    **Default**: ""
    * - `vfs.azure.blob_endpoint` <br>
-   *    Overrides the default Azure Storage Blob endpoint. If empty, the
-   *    endpoint will be constructed from the storage account name. This
-   *    should not include an http:// or https:// prefix. <br>
+   *    Set the default Azure Storage Blob endpoint. <br>
    *    **Default**: ""
    * - `vfs.azure.block_list_block_size` <br>
    *    The block size (in bytes) used in Azure blob block list writes.
@@ -524,9 +519,6 @@ class Config {
    *    **Default**: `sm.io_concurrency_level`
    * - `vfs.azure.use_block_list_upload` <br>
    *    Determines if the Azure backend can use chunked block uploads. <br>
-   *    **Default**: "true"
-   * - `vfs.azure.use_https` <br>
-   *    Determines if the blob endpoint should use HTTP or HTTPS.
    *    **Default**: "true"
    * - `vfs.gcs.project_id` <br>
    *    Set the GCS project id. <br>
