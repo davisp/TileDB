@@ -5,6 +5,10 @@
     "dependencies": [
         "bzip2",
         "liblzma",
+	{
+            "name": "libmagic",
+	    "platform": "!windows"
+	},
         "lz4",
         {
             "name": "openssl",
