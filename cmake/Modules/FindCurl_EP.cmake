@@ -25,12 +25,4 @@
 # THE SOFTWARE.
 #
 
-if (NOT TILEDB_GCS)
-  return()
-endif()
-if (NOT TILEDB_VCPKG)
-  message(FATAL_ERROR "TILEDB_VCPKG requires TILEDB_VCPKG. System-library provision must be done"
-                      "via vcpkg overlay")
-endif()
-
-find_package(google_cloud_cpp_storage REQUIRED)
+find_package(CURL REQUIRED)
