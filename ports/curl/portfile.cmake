@@ -46,6 +46,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
 
     INVERTED_FEATURES
     non-http HTTP_ONLY
+    openldap    CURL_DISABLE_LDAP
 )
 
 set(SECTRANSP_OPTIONS)

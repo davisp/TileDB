@@ -51,6 +51,7 @@
         "serialization": {
             "description": "Enable TileDB Cloud Support",
             "dependencies": [
+                "curl",
                 {
                     "name": "capnproto",
                     "version>=": "0.8.0"

@@ -25,4 +25,13 @@
 # THE SOFTWARE.
 #
 
-find_package(CURL REQUIRED)
+find_package(CURL REQUIRED ${TILEDB_DEPS_NO_DEFAULT_PATH})
+
+if (CURL_FOUND)
+  message(STATUS "Found CURL: '${CURL_LIBRARIES}' (found version \"${CURL_VERSION}\")")
+endif()
+
+# If we built a static EP, install it if required.
+if (TILEDB_CURL_EP_BUILT AND TILEDB_INSTALL_STATIC_DEPS)
+  install_target_libs(CURL::libcurl)
+endif()
