@@ -516,9 +516,10 @@ if (TILEDB_S3)
       AWSSDK::aws-cpp-sdk-sts)
   if (LINUX)
     target_link_libraries(TILEDB_CORE_OBJECTS_ILIB
-      AWSSDK::aws-c-io
-      AWSSDK::aws-c-cal
-      AWS::s2n)
+      INTERFACE
+        AWSSDK::aws-c-io
+        AWSSDK::aws-c-cal
+        AWS::s2n)
   endif()
 endif()
 
