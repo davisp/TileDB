@@ -120,6 +120,7 @@ elseif(TARGET spdlog::spdlog)
   endif()
 endif()
 
+
 # If we built a static EP, install it if required.
 if (TILEDB_SPDLOG_EP_BUILT AND TILEDB_INSTALL_STATIC_DEPS)
   install_target_libs(spdlog::spdlog)
