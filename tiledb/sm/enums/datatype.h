@@ -45,6 +45,12 @@ using namespace tiledb::common;
 namespace tiledb {
 namespace sm {
 
+#if defined(_WIN32) && defined(TIME_MS)
+#pragma message("WARNING: Windows.h may have already been included before")
+#pragma message("         tiledb/sm/enums/datatype.h which will likely cause a")
+#pragma message("         syntax error while defining the Datatype enum class.")
+#endif
+
 /** Defines a datatype. */
 enum class Datatype : uint8_t {
 #define TILEDB_DATATYPE_ENUM(id) id
