@@ -51,7 +51,7 @@
 #include "tiledb/sm/filter/webp_filter.h"
 #include "tiledb/sm/misc/hilbert.h"
 #include "tiledb/sm/misc/tdb_time.h"
-#include "tiledb/sm/misc/utils.h"
+#include "tiledb/sm/misc/type_casts.h"
 #include "tiledb/sm/tile/generic_tile_io.h"
 #include "tiledb/storage_format/uri/generate_uri.h"
 #include "tiledb/storage_format/uri/parse_uri.h"
@@ -832,8 +832,8 @@ void ArraySchema::serialize(Serializer& serializer) const {
   }
 
   // Write Enumeration path map
-  auto enmr_num = utils::datatype::safe_integral_cast<size_t, uint32_t>(
-      enumeration_map_.size());
+  auto enmr_num =
+      utils::safe_integral_cast<size_t, uint32_t>(enumeration_map_.size());
 
   serializer.write<uint32_t>(enmr_num);
   for (auto& [enmr_name, enmr_uri] : enumeration_path_map_) {

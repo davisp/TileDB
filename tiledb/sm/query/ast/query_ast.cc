@@ -31,9 +31,8 @@
  */
 
 #include "query_ast.h"
-#include "tiledb/common/unreachable.h"
 #include "tiledb/sm/array_schema/enumeration.h"
-#include "tiledb/sm/misc/utils.h"
+#include "tiledb/sm/misc/type_casts.h"
 
 using namespace tiledb::common;
 
@@ -113,7 +112,7 @@ void ASTNodeVal::rewrite_enumeration_conditions(
   auto val_size = datatype_size(attr->type());
 
   condition_value_data_ = ByteVecValue(val_size);
-  utils::datatype::safe_integral_cast_to_datatype(
+  utils::safe_integral_cast_to_datatype(
       idx, attr->type(), condition_value_data_);
 
   condition_value_view_ =

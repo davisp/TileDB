@@ -34,14 +34,14 @@
 #include <random>
 
 #include "test/support/tdb_catch.h"
-#include "tiledb/sm/misc/utils.h"
+#include "tiledb/sm/misc/type_casts.h"
 
 // These tests are for the safe_integral_cast and safe_itegral_cast_to_datatype
-// functions found in `tiledb/sm/misc/utils.h`. These casts are named "safe"
-// because they only allow casts that result in the same semantic value in the
-// target type. This means that some casts that would be allowed by static_cast
-// or similar facilties are rejected. Most notably, casts between types with
-// different signed-ness are more thoroughly checked for correctness.
+// functions found in `tiledb/sm/misc/type_casts.h`. These casts are named
+// "safe" because they only allow casts that result in the same semantic value
+// in the target type. This means that some casts that would be allowed by
+// static_cast or similar facilties are rejected. Most notably, casts between
+// types with different signed-ness are more thoroughly checked for correctness.
 //
 // There are two main tests in this file, one for safe_integral_cast and one
 // for safe_integral_cast_to_datatype. These tests work by generating a
@@ -115,10 +115,10 @@ struct TestCase {
 /*          TEST CALLBACKS           */
 /* ********************************* */
 
-// Test implementation for util::datatype::safe_integral_cast
+// Test implementation for util::safe_integral_cast
 void check_safe_integral_cast(const TestCase& tc);
 
-// Test implementation for util::datatype::safe_integral_cast_to_datatype
+// Test implementation for util::safe_integral_cast_to_datatype
 void check_safe_integral_cast_to_datatype(const TestCase& tc);
 
 /* ********************************* */
@@ -155,7 +155,7 @@ T buf_to_value(const uint8_t* buffer);
 /*        safe_integral_cast         */
 /* ********************************* */
 
-TEST_CASE("util::datatype::safe_integral_cast", "[safe-integral-casts]") {
+TEST_CASE("util::safe_integral_cast", "[safe-integral-casts]") {
   run_test(check_safe_integral_cast);
 }
 
@@ -208,10 +208,10 @@ void dispatch_safe_integral_cast(const TestCase& tc) {
 template <typename Source, typename Target>
 void run_safe_integral_cast(const TestCase&, Source src) {
   if (should_cast_succeed<Source, Target>(src)) {
-    auto tgt = utils::datatype::safe_integral_cast<Source, Target>(src);
-    REQUIRE(src == utils::datatype::safe_integral_cast<Target, Source>(tgt));
+    auto tgt = utils::safe_integral_cast<Source, Target>(src);
+    REQUIRE(src == utils::safe_integral_cast<Target, Source>(tgt));
   } else {
-    REQUIRE_THROWS(utils::datatype::safe_integral_cast<Source, Target>(src));
+    REQUIRE_THROWS(utils::safe_integral_cast<Source, Target>(src));
   }
 }
 
@@ -219,19 +219,17 @@ void run_safe_integral_cast(const TestCase&, Source src) {
 /*  safe_integral_cast_to_datatype   */
 /* ********************************* */
 
-TEST_CASE(
-    "util::datatype::safe_integral_cast_to_datatype", "[safe-integral-casts]") {
+TEST_CASE("util::safe_integral_cast_to_datatype", "[safe-integral-casts]") {
   run_test(check_safe_integral_cast_to_datatype);
 }
 
 TEST_CASE(
-    "util::datatype::safe_integral_cast_to_datatype bad type",
+    "util::safe_integral_cast_to_datatype bad type",
     "[safe-integral-casts][error]") {
   ByteVecValue bvv;
+  REQUIRE_THROWS(utils::safe_integral_cast_to_datatype(5, Datatype::BLOB, bvv));
   REQUIRE_THROWS(
-      utils::datatype::safe_integral_cast_to_datatype(5, Datatype::BLOB, bvv));
-  REQUIRE_THROWS(utils::datatype::safe_integral_cast_to_datatype(
-      5, Datatype::STRING_ASCII, bvv));
+      utils::safe_integral_cast_to_datatype(5, Datatype::STRING_ASCII, bvv));
 }
 
 template <typename Source>
@@ -289,7 +287,7 @@ void run_safe_integral_cast_to_datatype(
     const TestCase&, Source src, Datatype dtype) {
   ByteVecValue dest;
   if (should_cast_succeed<Source>(src, dtype)) {
-    utils::datatype::safe_integral_cast_to_datatype<Source>(src, dtype, dest);
+    utils::safe_integral_cast_to_datatype<Source>(src, dtype, dest);
     switch (dtype) {
       case Datatype::BOOL:
         REQUIRE(dest.rvalue_as<uint8_t>() == (uint8_t)src);
@@ -322,8 +320,8 @@ void run_safe_integral_cast_to_datatype(
         throw std::logic_error("Invalid datatype for test");
     }
   } else {
-    REQUIRE_THROWS(utils::datatype::safe_integral_cast_to_datatype<Source>(
-        src, dtype, dest));
+    REQUIRE_THROWS(
+        utils::safe_integral_cast_to_datatype<Source>(src, dtype, dest));
   }
 }
 
