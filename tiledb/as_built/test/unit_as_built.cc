@@ -77,9 +77,7 @@ TEST_CASE("as_built: Print dump", "[as_built][dump][.print_json]") {
 }
 
 /** Allow Ubuntu-only failure on all of the following tests; fix in progress. */
-TEST_CASE(
-    "as_built: Ensure dump has json output",
-    "[as_built][dump][json]") {
+TEST_CASE("as_built: Ensure dump has json output", "[as_built][dump][json]") {
   json x;
   CHECK_NOTHROW(x = json::parse(dump_str_));
   CHECK(!x.is_null());
@@ -87,31 +85,28 @@ TEST_CASE(
   CHECK(x == dump_);
 }
 
-TEST_CASE(
-    "as_built: Validate top-level key", "[as_built][top-level]") {
+TEST_CASE("as_built: Validate top-level key", "[as_built][top-level]") {
   auto x{dump_.value()["as_built"]};
+  std::cerr << "XKCD: " << dump_.value().dump(2) << std::endl;
   CHECK(x.type() == nlohmann::detail::value_t::object);
   CHECK(!x.empty());
 }
 
-TEST_CASE(
-    "as_built: Validate parameters key", "[as_built][parameters]") {
+TEST_CASE("as_built: Validate parameters key", "[as_built][parameters]") {
   auto x{dump_.value()["as_built"]["parameters"]};
   CHECK(x.type() == nlohmann::detail::value_t::object);
   CHECK(!x.empty());
 }
 
 TEST_CASE(
-    "as_built: Validate storage_backends key",
-    "[as_built][storage_backends]") {
+    "as_built: Validate storage_backends key", "[as_built][storage_backends]") {
   auto x{dump_.value()["as_built"]["parameters"]["storage_backends"]};
   CHECK(x.type() == nlohmann::detail::value_t::object);
   CHECK(!x.empty());
 }
 
 TEST_CASE(
-    "as_built: storage_backends attributes",
-    "[as_built][storage_backends]") {
+    "as_built: storage_backends attributes", "[as_built][storage_backends]") {
   auto x{dump_.value()["as_built"]["parameters"]["storage_backends"]};
   CHECK(!x.empty());
 
