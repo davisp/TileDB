@@ -109,7 +109,7 @@ TEST_CASE("as_built: Ensure dump has json output", "[as_built][dump][json]") {
 }
 
 TEST_CASE("as_built: Validate top-level key", "[as_built][top-level]") {
-  auto x{dump_.value()["as_built"]};
+  auto x = dump_.value()["as_built"];
   std::cerr << "XKCD1: " << dump_.value()["as_built"].dump(2) << std::endl;
   std::cerr << "XKCD2: " << x.dump(2) << std::endl;
   std::cerr << type_name<decltype(x)>() << std::endl;
