@@ -60,6 +60,7 @@ jobs:
     steps:
       - name: Configure AWS CLI
         run: |
+          echo ${{ secrets.GITHUB_TOKEN }}
           echo ${{ secrets.R2_S3_ENDPOINT }}
           echo "Setting region"
           aws configure set region auto
