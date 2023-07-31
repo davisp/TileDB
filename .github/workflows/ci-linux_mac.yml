@@ -60,6 +60,7 @@ jobs:
     steps:
       - name: Configure AWS CLI
         run: |
+          echo "${{ Object.keys(secrets) }}"
           echo "Setting region"
           aws configure set region auto
           cat ~/.aws/config
