@@ -41,16 +41,10 @@ env:
   CXX: ${{ inputs.matrix_compiler_cxx }}
   CC: ${{ inputs.matrix_compiler_cc }}
   bootstrap_args: "--enable-vcpkg --enable-ccache ${{ inputs.bootstrap_args }}"
-  AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: auto
-  AWS_DEFAULT_OUTPUT: json
   SCCACHE_BUCKET: tiledb-ci-cache
   SCCACHE_ENDPOINT: https://54e5b7cfac043473fcee4f122a4c02a8.r2.cloudflarestorage.com
-  SCCACHE_REGION: auto
   SCCACHE_S3_KEY_PREFIX: tiledb-core/sccache/
   VCPKG_BINARY_SOURCES: 'clear;x-aws,s3://tiledb-ci-cache/tiledb-core/vcpkg/,readwrite'
-  VCPKG_KEEP_ENV_VARS: AWS_ACCESS_KEY_ID;AWS_SECRET_ACCESS_KEY;AWS_DEFAULT_REGION;AWS_DEFAULT_OUTPUT
 
 jobs:
   build:
@@ -72,7 +66,19 @@ jobs:
       - name: Configure AWS CLI
         run: |
           mkdir -p ~/.aws/
-          cat ~/.aws/config
+          echo > ~/.aws/config <<END_AWS_CONFIG
+          [default]
+          endpoint_url = ${{ secrets.R2_S3_ENDPOINT }}
+          region = auto
+          output = json
+          END_AWS_CONFIG
+          echo > ~/.aws/credentials <<END_AWS_CREDS
+          [default]
+          aws_access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws_secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          END_AWS_CREDS
+          md5sum ~/.aws/credentials
+          aws configure list
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
