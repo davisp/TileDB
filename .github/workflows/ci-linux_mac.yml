@@ -59,11 +59,13 @@ jobs:
     name: ${{matrix.os}} - ${{ inputs.ci_backend }}${{ inputs.ci_option }}
     steps:
       - name: Configure AWS CLI
+        env:
+          R2_S3_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
         run: |
           echo "Token"
           echo ${{ secrets.GITHUB_TOKEN }}
           echo "Endpoint"
-          echo ${{ secrets.R2_S3_ENDPOINT }}
+          echo $R2_S3_ENDPOINT
           echo "PJD Secret"
           echo ${{ secrets.PJD_SECRET }}
           echo "Some var"
