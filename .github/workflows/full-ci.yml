@@ -32,6 +32,7 @@ concurrency:
 jobs:
   ci1:
     uses: ./.github/workflows/ci-linux_mac.yml
+    secrets: inherit
     with:
       ci_backend: AZURE
       matrix_image: ubuntu-20.04
@@ -39,6 +40,7 @@ jobs:
 
   ci2:
     uses: ./.github/workflows/ci-linux_mac.yml
+    secrets: inherit
     with:
       ci_backend: GCS
       matrix_image: ubuntu-20.04
@@ -47,6 +49,7 @@ jobs:
 
   ci3:
     uses: ./.github/workflows/ci-linux_mac.yml
+    secrets: inherit
     with:
       ci_option: SERIALIZATION
       matrix_image: ubuntu-22.04
@@ -54,6 +57,7 @@ jobs:
 
   ci4:
     uses: ./.github/workflows/ci-linux_mac.yml
+    secrets: inherit
     with:
       ci_backend: HDFS
       matrix_image: ubuntu-22.04
