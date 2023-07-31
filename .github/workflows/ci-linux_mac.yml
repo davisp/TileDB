@@ -77,6 +77,8 @@ jobs:
           aws_access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}
           aws_secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}
           END_AWS_CREDS
+          md5sum ~/.aws/config
+          cat ~/.aws/config
           md5sum ~/.aws/credentials
           aws configure list
 
