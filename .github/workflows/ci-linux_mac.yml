@@ -76,7 +76,7 @@ jobs:
           echo "aws_secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
           ls -alh ~/.aws/
           aws configure list
-          aws --endpoint-url = ${{ secrets.R2_S3_ENDPOINT }} s3api list-buckets
+          aws --endpoint-url ${{ secrets.R2_S3_ENDPOINT }} s3api list-buckets
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
