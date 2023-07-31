@@ -69,6 +69,11 @@ jobs:
             submodules: true
             fetch-depth: 0
 
+      - name: Configure AWS CLI
+        run: |
+          mkdir -p ~/.aws/
+          cat ~/.aws/config
+
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         id: runvcpkg
