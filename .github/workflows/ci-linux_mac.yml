@@ -58,37 +58,24 @@ jobs:
     timeout-minutes: ${{ inputs.timeout || 90 }}
     name: ${{matrix.os}} - ${{ inputs.ci_backend }}${{ inputs.ci_option }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-            submodules: true
-            fetch-depth: 0
-
       - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          aws-region: auto
+
+      - name: Test AWS CLI
         run: |
           aws --version
-          mkdir -p ~/.aws/
-          echo "[default]" > ~/.aws/config
-          echo "endpoint_url = ${{ secrets.R2_S3_ENDPOINT }}" >> ~/.aws/config
-          echo "region = auto" >> ~/.aws/config
-          echo "output = json" >> ~/.aws/config
-          echo "[default]" > ~/.aws/credentials
-          echo "aws_access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-          echo "aws_secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
-          ls -alh ~/.aws/
           aws configure list
+          cat ~/.aws/config
           aws --endpoint-url ${{ secrets.R2_S3_ENDPOINT }} s3api list-buckets
 
-      - name: Setup vcpkg
-        uses: lukka/run-vcpkg@v11
-        id: runvcpkg
+      - uses: actions/checkout@v3
         with:
-          vcpkgJsonGlob: 'vcpkg.json'
-          vcpkgDirectory: '${{ github.workspace }}/external/vcpkg'
-
-      - name: Prints output of run-vcpkg's action.
-        run: |
-          echo "run-vcpkg outputs:"
-          echo "${{ toJSON(steps.runvcpkg.outputs) }}"
+          submodules: true
+          fetch-depth: 0
 
       - name: Prevent vpckg from building debug variants
         run: ./scripts/ci/posix/patch_vcpkg_triplets.sh
