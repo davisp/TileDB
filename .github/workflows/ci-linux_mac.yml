@@ -60,10 +60,15 @@ jobs:
     steps:
       - name: Configure AWS CLI
         run: |
+          echo "Setting region"
           aws configure set region auto
+          echo "Setting output"
           aws configure set output json
+          echo "Setting endpoint_url"
           aws configure set endpoint_url ${{ secrets.R2_S3_ENDPOINT }}
+          echo "Setting access key"
           aws configure set aws_access_key_id ${{ secrets.R2_ACCESS_KEY_ID }}
+          echo "Setting secret key"
           aws configure set aws_secret_access_key ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
       - name: Test AWS CLI
