@@ -50,6 +50,7 @@ env:
   SCCACHE_REGION: auto
   SCCACHE_S3_KEY_PREFIX: tiledb-core/sccache/
   VCPKG_BINARY_SOURCES: 'clear;x-aws,s3://tiledb-ci-cache/tiledb-core/vcpkg/,readwrite'
+  VCPKG_KEEP_ENV_VARS: AWS_ACCESS_KEY_ID;AWS_SECRET_ACCESS_KEY;AWS_DEFAULT_REGION;AWS_DEFAULT_OUTPUT
 
 jobs:
   build:
