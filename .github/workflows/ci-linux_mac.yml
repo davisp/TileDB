@@ -48,6 +48,7 @@ env:
 
 jobs:
   build:
+    environment: experiment
     strategy:
       matrix:
         os:
@@ -59,7 +60,6 @@ jobs:
     name: ${{matrix.os}} - ${{ inputs.ci_backend }}${{ inputs.ci_option }}
     steps:
       - name: Configure AWS CLI
-        environment: experiment
         run: |
           echo ${{ secrets.GITHUB_TOKEN }}
           echo ${{ secrets.R2_S3_ENDPOINT }}
