@@ -62,10 +62,13 @@ jobs:
         run: |
           echo "Setting region"
           aws configure set region auto
+          cat ~/.aws/config
           echo "Setting output"
           aws configure set output json
+          cat ~/.aws/config
           echo "Setting endpoint_url"
           aws configure set endpoint_url ${{ secrets.R2_S3_ENDPOINT }}
+          cat ~/.aws/config
           echo "Setting access key"
           aws configure set aws_access_key_id ${{ secrets.R2_ACCESS_KEY_ID }}
           echo "Setting secret key"
