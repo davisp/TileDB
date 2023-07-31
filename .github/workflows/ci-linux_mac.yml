@@ -60,9 +60,14 @@ jobs:
     steps:
       - name: Configure AWS CLI
         run: |
+          echo "Token"
           echo ${{ secrets.GITHUB_TOKEN }}
+          echo "Endpoint"
           echo ${{ secrets.R2_S3_ENDPOINT }}
+          echo "PJD Secret"
           echo ${{ secrets.PJD_SECRET }}
+          echo "Some var"
+          echo ${{ vars.SOME_VAR }}
           echo "Setting region"
           aws configure set region auto
           cat ~/.aws/config
