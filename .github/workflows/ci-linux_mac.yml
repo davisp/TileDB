@@ -59,9 +59,11 @@ jobs:
     name: ${{matrix.os}} - ${{ inputs.ci_backend }}${{ inputs.ci_option }}
     steps:
       - name: Configure AWS CLI
+        environment: experiment
         run: |
           echo ${{ secrets.GITHUB_TOKEN }}
           echo ${{ secrets.R2_S3_ENDPOINT }}
+          echo ${{ secrets.PJD_SECRET }}
           echo "Setting region"
           aws configure set region auto
           cat ~/.aws/config
