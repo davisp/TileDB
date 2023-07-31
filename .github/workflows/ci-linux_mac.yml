@@ -48,7 +48,6 @@ env:
 
 jobs:
   build:
-    environment: experiment
     strategy:
       matrix:
         os:
