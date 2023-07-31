@@ -68,7 +68,7 @@ jobs:
           aws --version
           mkdir -p ~/.aws/
           echo "[default]" > ~/.aws/config
-          echo "endpoint_url = ${{ secrets.R2_S3_ENDPOINT }} >> ~/.aws/config
+          echo "endpoint_url = ${{ secrets.R2_S3_ENDPOINT }}" >> ~/.aws/config
           echo "region = auto" >> ~/.aws/config
           echo "output = json" >> ~/.aws/config
           echo "[default]" > ~/.aws/credentials
