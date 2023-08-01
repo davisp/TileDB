@@ -60,6 +60,11 @@ jobs:
     steps:
       - name: Test AWS CLI
         run: |
+          aws configure set endpoint_url ${{ secrets.R2_S3_ENDPOINT }}
+          aws configure set aws_access_key_id ${{ secrets.R2_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          aws configure set region auto
+          aws configure set output json
           aws --version
           aws s3api list-buckets
         env:
