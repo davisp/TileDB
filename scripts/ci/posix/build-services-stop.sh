@@ -18,3 +18,11 @@ if [[ "$TILEDB_CI_BACKEND" == "S3" ]] && [[ "$TILEDB_CI_OS" == "macOS" ]]; then
   # docker.
   kill -n 9 "$MINIO_PID"
 fi
+
+if [[ "$AWS_ACCESS_KEY_ID" == "minio" ]]; then
+  unset AWS_ACCESS_KEY_ID
+fi
+
+if [[ "$AWS_SECRET_ACCESS_KEY" == "miniosecretkey" ]]; then
+  unset AWS_SECRET_ACCESS_KEY
+fi
