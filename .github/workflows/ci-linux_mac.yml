@@ -58,20 +58,15 @@ jobs:
     timeout-minutes: ${{ inputs.timeout || 90 }}
     name: ${{matrix.os}} - ${{ inputs.ci_backend }}${{ inputs.ci_option }}
     steps:
-      - name: Test AWS CLI
-        run: |
-          aws configure set endpoint_url ${{ secrets.R2_S3_ENDPOINT }}
-          aws configure set aws_access_key_id ${{ secrets.R2_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          aws configure set region auto
-          aws configure set output json
-          aws --version
-          aws s3api list-buckets
+      - name: Configure AWS CLI
+        run: ./scripts/ci/configure-aws-cli.py
         env:
-          AWS_ENDPOINT_URL: ${{ secrets.R2_S3_ENDPOINT }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_REGION: auto
+          R2_S3_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      - name: Test AWS CLI
+        run: aws s3api list-buckets
 
       - uses: actions/checkout@v3
         with:
