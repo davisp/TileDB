@@ -72,7 +72,7 @@ jobs:
           write-host "BUILD_SOURCESDIRECTORY=$env:BUILD_SOURCESDIRECTORY" *>> $env:GITHUB_ENV
 
       - name: Configure AWS CLI
-        run: python ${{ github.workspace }}/scripts/ci/configure-aws-cli.py
+        run: python ${{ github.workspace }}\scripts\ci\configure-aws-cli.py
         env:
           R2_S3_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
