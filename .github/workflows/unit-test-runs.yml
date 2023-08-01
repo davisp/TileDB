@@ -11,6 +11,10 @@ env:
   TILEDB_SERIALIZATION: ON
   TILEDB_STATIC: ON
   TILEDB_TOOLS: ON
+  SCCACHE_BUCKET: tiledb-ci-cache
+  SCCACHE_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
+  SCCACHE_S3_KEY_PREFIX: tiledb-core/sccache/
+  VCPKG_BINARY_SOURCES: 'clear;x-aws,s3://tiledb-ci-cache/tiledb-core/vcpkg/,readwrite'
 
 jobs:
   build:
@@ -22,6 +26,16 @@ jobs:
     name: Build - ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
+
+      - name: Configure AWS CLI
+        run: ./scripts/ci/configure-aws-cli.py
+        env:
+          R2_S3_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.3
 
       - name: 'Homebrew setup'
         run: brew install pkg-config
@@ -47,6 +61,7 @@ jobs:
 
           cmake .. \
             -DTILEDB_VCPKG=ON \
+            -DTILEDB_CCACHE=ON \
             -DTILEDB_AZURE=${TILEDB_AZURE}\
             -DTILEDB_GCS=${TILEDB_GCS} \
             -DTILEDB_S3=${TILEDB_S3} \

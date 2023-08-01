@@ -18,6 +18,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Configure AWS CLI
+        run: ./scripts/ci/configure-aws-cli.py
+        env:
+          R2_S3_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
       - name: 'Print env'
         run: ./scripts/ci/posix/print-env.sh
         shell: bash
@@ -36,7 +46,7 @@ jobs:
         shell: bash
         run: |
           bootstrap_args="${bootstrap_args}";
-          bootstrap_args="${bootstrap_args} --enable-release-symbols";
+          bootstrap_args="${bootstrap_args} --enable-vcpkg --enable-ccache --enable-release-symbols";
           source $GITHUB_WORKSPACE/scripts/ci/bootstrap_libtiledb.sh
           source $GITHUB_WORKSPACE/scripts/ci/build_libtiledb.sh
 
