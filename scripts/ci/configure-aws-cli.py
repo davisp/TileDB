@@ -61,7 +61,8 @@ def write_creds(path):
     handle.write(contents.format(key_id, key))
 
 def main():
-  aws_dir = os.path.expanduser("~/.aws")
+  home_dir = os.path.expanduser("~")
+  aws_dir = os.path.join(home_dir, ".aws")
   if not os.path.exists(aws_dir):
     os.makedirs(aws_dir, exists_ok=True)
   config_file = os.path.join(aws_dir, "config")
