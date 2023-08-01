@@ -61,8 +61,6 @@ jobs:
       - name: Test AWS CLI
         run: |
           aws --version
-          aws configure list
-          cat ~/.aws/config
           aws s3api list-buckets
         env:
           AWS_ENDPOINT_URL: ${{ secrets.R2_S3_ENDPOINT }}
