@@ -64,7 +64,7 @@ def main():
   home_dir = os.path.expanduser("~")
   aws_dir = os.path.join(home_dir, ".aws")
   if not os.path.exists(aws_dir):
-    os.makedirs(aws_dir, exists_ok=True)
+    os.makedirs(aws_dir, exist_ok=True)
   config_file = os.path.join(aws_dir, "config")
   creds_file = os.path.join(aws_dir, "credentials")
   write_config(config_file)
