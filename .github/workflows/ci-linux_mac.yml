@@ -58,38 +58,17 @@ jobs:
     timeout-minutes: ${{ inputs.timeout || 90 }}
     name: ${{matrix.os}} - ${{ inputs.ci_backend }}${{ inputs.ci_option }}
     steps:
-      - name: Configure AWS CLI
-        env:
-          R2_S3_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
-        run: |
-          echo "Token"
-          echo ${{ secrets.GITHUB_TOKEN }}
-          echo "Endpoint"
-          echo $R2_S3_ENDPOINT
-          echo "PJD Secret"
-          echo ${{ secrets.PJD_SECRET }}
-          echo "Some var"
-          echo ${{ vars.SOME_VAR }}
-          echo "Setting region"
-          aws configure set region auto
-          cat ~/.aws/config
-          echo "Setting output"
-          aws configure set output json
-          cat ~/.aws/config
-          echo "Setting endpoint_url"
-          aws configure set endpoint_url ${{ secrets.R2_S3_ENDPOINT }}
-          cat ~/.aws/config
-          echo "Setting access key"
-          aws configure set aws_access_key_id ${{ secrets.R2_ACCESS_KEY_ID }}
-          echo "Setting secret key"
-          aws configure set aws_secret_access_key ${{ secrets.R2_SECRET_ACCESS_KEY }}
-
       - name: Test AWS CLI
         run: |
           aws --version
           aws configure list
           cat ~/.aws/config
-          aws --endpoint-url ${{ secrets.R2_S3_ENDPOINT }} s3api list-buckets
+          aws s3api list-buckets
+        env:
+          AWS_ENDPOINT_URL: ${{ secrets.R2_S3_ENDPOINT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_REGION: auto
 
       - uses: actions/checkout@v3
         with:

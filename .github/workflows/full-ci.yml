@@ -67,6 +67,7 @@ jobs:
 
   ci5:
     uses: ./.github/workflows/ci-linux_mac.yml
+    secrets: inherit
     with:
       ci_backend: S3
       matrix_image: macos-11
@@ -75,6 +76,7 @@ jobs:
 
   ci6:
     uses: ./.github/workflows/ci-linux_mac.yml
+    secrets: inherit
     with:
       ci_backend: GCS
       matrix_image: macos-11
@@ -83,6 +85,7 @@ jobs:
 
   ci7:
     uses: ./.github/workflows/ci-linux_mac.yml
+    secrets: inherit
     with:
       ci_option: Experimental
       matrix_image: ubuntu-22.04
@@ -90,6 +93,7 @@ jobs:
 
   ci8:
     uses: ./.github/workflows/ci-linux_mac.yml
+    secrets: inherit
     with:
       ci_backend: S3
       matrix_image: ubuntu-22.04
