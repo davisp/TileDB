@@ -102,6 +102,7 @@ jobs:
 
   ci_msvc:
     uses: ./.github/workflows/build-windows.yml
+    secrets: inherit
 
   ci_mingw_r:
     uses: ./.github/workflows/build-rtools40.yml

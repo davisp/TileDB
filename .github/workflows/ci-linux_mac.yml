@@ -70,9 +70,6 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
-      - name: Test AWS CLI
-        run: aws s3api list-buckets
-
       - name: Prevent vpckg from building debug variants
         run: ./scripts/ci/posix/patch_vcpkg_triplets.sh
 
