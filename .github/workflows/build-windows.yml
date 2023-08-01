@@ -219,6 +219,7 @@ jobs:
             exit $LastExitCode
           }
 
+          cmake --help
           cmake --build $env:BUILD_BUILDDIRECTORY --config $CMakeBuildType -j $env:NUMBER_OF_PROCESSORS 2>&1
 
           if ($LastExitCode -ne 0) {
