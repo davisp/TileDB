@@ -37,7 +37,7 @@ def check_no_file_named(path):
     print("AWS config file '{}' exists. Refusing to overwrite.".format(path))
     exit(2)
 
-def write_config_file(path):
+def write_config(path):
   check_no_file_named(path)
   endpoint = from_env("R2_S3_ENDPOINT")
   contents = textwrap.dedent("""\
@@ -49,7 +49,7 @@ def write_config_file(path):
   with open(path, "w") as handle:
     handle.write(contents.format(endpoint))
 
-def write_creds_file(path):
+def write_creds(path):
   key_id = from_env("R2_ACCESS_KEY_ID")
   key = from_env("R2_SECRET_ACCESS_KEY")
   contents = textwrap.dedent("""\
