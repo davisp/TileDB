@@ -202,6 +202,7 @@ jobs:
       - name: Build TileDB
         shell: powershell
         run: |
+          $CMakeBuildType = $env:TILEDB_CMAKE_BUILD_TYPE
           cmake --build $env:BUILD_BUILDDIRECTORY --config $CMakeBuildType -j $env:NUMBER_OF_PROCESSORS 2>&1
 
           if ($LastExitCode -ne 0) {
@@ -219,6 +220,8 @@ jobs:
       - name: Build Tests
         shell: powershell
         run: |
+          $CMakeBuildType = $env:TILEDB_CMAKE_BUILD_TYPE
+
           if ($env:TILEDB_S3 -eq "ON") {
             # $env:MINIO_ACCESS_KEY = "minio"
             # $env:MINIO_SECRET_KEY = "miniosecretkey"
@@ -288,7 +291,6 @@ jobs:
              $host.SetShouldExit($LastExitCode)
           }
 
-
           if ($env:TILEDB_WEBP -eq "ON") {
             $cmds = "$env:BUILD_BUILDDIRECTORY\tiledb\tiledb\sm\compressors\$CMakeBuildType\unit_link_webp.exe"
             Write-Host "cmds: '$cmds'"
@@ -304,6 +306,7 @@ jobs:
         shell: powershell
         run: |
           # Build the examples
+          $CMakeBuildType = $env:TILEDB_CMAKE_BUILD_TYPE
           cmake --build $env:BUILD_BUILDDIRECTORY --target examples --config $CMakeBuildType -v
 
           if ($LastExitCode -ne 0) {
@@ -314,6 +317,7 @@ jobs:
       - name: Run Examples
         shell: powershell
         run: |
+          $CMakeBuildType = $env:TILEDB_CMAKE_BUILD_TYPE
           $env:Path += ";$env:BUILD_BUILDDIRECTORY\dist\bin;$env:BUILD_BUILDDIRECTORY\externals\install\bin"
 
           $TestAppDir = (Join-Path $env:BUILD_BUILDDIRECTORY "tiledb\examples\c_api")
@@ -386,6 +390,7 @@ jobs:
         shell: powershell
         run: |
           # Build examples
+          $CMakeBuildType = $env:TILEDB_CMAKE_BUILD_TYPE
           cd $env:BUILD_SOURCESDIRECTORY\examples\cmake_project
 
           mkdir build
