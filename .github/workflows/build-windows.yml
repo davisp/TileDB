@@ -290,7 +290,7 @@ jobs:
 
           # Actually run tests
 
-          $cmds = "$env:BUILD_BUILDDIRECTORY\tiledb\test\$CMakeBuildType\tiledb_unit.exe -d=yes"
+          $cmds = "$env:BUILD_BUILDDIRECTORY\tiledb\test\tiledb_unit.exe -d=yes"
           Write-Host "cmds: '$cmds'"
           Invoke-Expression $cmds
           if ($LastExitCode -ne 0) {
@@ -298,7 +298,7 @@ jobs:
              $host.SetShouldExit($LastExitCode)
           }
 
-          $cmds = "$env:BUILD_BUILDDIRECTORY\tiledb\test\ci\$CMakeBuildType\test_assert.exe -d=yes"
+          $cmds = "$env:BUILD_BUILDDIRECTORY\tiledb\test\ci\test_assert.exe -d=yes"
           Invoke-Expression $cmds
           if ($LastExitCode -ne 0) {
              Write-Host "Tests failed. test_assert exit status: " $LastExitCocde
@@ -306,7 +306,7 @@ jobs:
           }
 
           if ($env:TILEDB_WEBP -eq "ON") {
-            $cmds = "$env:BUILD_BUILDDIRECTORY\tiledb\tiledb\sm\compressors\$CMakeBuildType\unit_link_webp.exe"
+            $cmds = "$env:BUILD_BUILDDIRECTORY\tiledb\tiledb\sm\compressors\unit_link_webp.exe"
             Write-Host "cmds: '$cmds'"
             Invoke-Expression $cmds
 
