@@ -92,7 +92,7 @@ jobs:
           python -m pip install --upgrade pip virtualenv
           pip install pyarrow pybind11 numpy
 
-      - name: 'Setup Homebrew on MacOS' # x-ref c8e49ba8f8b9ce
+      - name: Setup Homebrew on MacOS # x-ref c8e49ba8f8b9ce
         if: ${{ startsWith(matrix.os, 'macos-') == true }}
         run: |
           set -e pipefail
