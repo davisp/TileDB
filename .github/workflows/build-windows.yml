@@ -204,6 +204,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           find . -name "*.props"
+          cd $BUILD_BUILDDIRECTORY
+          find . -name "*.props"
 
       - name: Build TileDB
         shell: powershell
