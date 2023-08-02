@@ -122,6 +122,9 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
+      - name: Setup Ninja
+        uses: seanmiddleditch/gha-setup-ninja
+
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.3
 
@@ -458,8 +461,10 @@ jobs:
         if: ${{ failure() }} # only run this job if the build step failed
         shell: bash
         run: |
-          source $GITHUB_WORKSPACE/scripts/ci/print_logs.sh
-          echo "# ------------------------------------"
+          $GITHUB_WORKSPACE/scripts/ci/print_logs.sh $BUILD_BUILDDIRECTORY
+
+          echo "# List dist"
           find $BUILD_BUILDDIRECTORY/dist
-          echo "# --------vcpkg----------------------------"
+
+          echo "# List vcpkg_installed"
           find $BUILD_BUILDDIRECTORY/vcpkg_installed
