@@ -473,12 +473,4 @@ jobs:
             echo "::endgroup::"
           done
 
-          echo "# List dist"
-          if [ -d dist ]; then
-            find dist | sort
-          fi
-
-          echo "# List vcpkg_installed"
-          if [ -d vcpkg_installed ]; then
-            find vcpkg_installed | sort
-          fi
+          find .
