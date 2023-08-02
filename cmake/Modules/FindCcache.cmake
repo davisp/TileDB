@@ -13,28 +13,6 @@ if (CCACHE_FOUND)
 
   set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_FOUND})
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_FOUND})
-
-  if (WIN32)
-    file(COPY_FILE ${CCACHE_FOUND} ${CMAKE_BINARY_DIR}/cl.exe ONLY_IF_DIFFERENT)
-    configure_file(
-      "${CMAKE_SOURCE_DIR}/.github/workflows/directory-build-props.xml"
-      "${CMAKE_SOURCE_DIR}/Directory.Build.props"
-      USE_SOURCE_PERMISSIONS
-      NEWLINE_STYLE WIN32
-    )
-    configure_file(
-      "${CMAKE_SOURCE_DIR}/.github/workflows/directory-build-props.xml"
-      "${CMAKE_BINARY_DIR}/Directory.Build.props"
-      USE_SOURCE_PERMISSIONS
-      NEWLINE_STYLE WIN32
-    )
-    configure_file(
-      "${CMAKE_SOURCE_DIR}/.github/workflows/directory-build-props.xml"
-      "${CMAKE_BINARY_DIR}/tiledb/Directory.Build.props"
-      USE_SOURCE_PERMISSIONS
-      NEWLINE_STYLE WIN32
-    )
-  endif()
 else()
   message(FATAL_ERROR "Unable to find ccache")
 endif()
