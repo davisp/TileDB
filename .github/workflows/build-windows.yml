@@ -472,7 +472,7 @@ jobs:
         if: ${{ failure() }} # only run this job if the build step failed
         shell: bash
         run: |
-          cd $BUILD_SOURCEDIRECTORY
+          cd $BUILD_SOURCEDIRECTORY/external
           for f in $(find . -type f -name "*.log"); do
             echo "::group::$f"
             cat $f
