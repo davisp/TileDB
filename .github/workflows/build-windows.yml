@@ -11,7 +11,7 @@ env:
   TILEDB_SERIALIZATION: OFF
   TILEDB_STATIC: OFF
   TILEDB_TOOLS: ON
-  TILEDB_BASE_BOOTSTRAP_OPTIONS: '-CMakeGenerator Ninja -EnableVcpkg -EnableCCache -EnableVerbose -EnableStaticTileDB'
+  TILEDB_BASE_BOOTSTRAP_OPTIONS: '-EnableVcpkg -EnableCCache -EnableVerbose -EnableStaticTileDB'
 
 jobs:
   build:
@@ -210,8 +210,6 @@ jobs:
             $bootstrapOptions = $bootstrapOptions + " -DisableWebP"
           }
 
-          cmake --help
-
           $bootstrapExpression = "& $env:BUILD_SOURCESDIRECTORY\bootstrap.ps1 " + $bootstrapOptions
           Write-Host "bootstrapExpression: $bootstrapExpression"
           Invoke-Expression $bootstrapExpression
@@ -402,7 +400,7 @@ jobs:
           cd build
 
           # Build zip artifact
-          cmake -DCMAKE_PREFIX_PATH="$env:BUILD_BUILDDIRECTORY\dist;$env:BUILD_BUILD_DIRECTORY\vcpkg_installed\x64-windows-mod" ..
+          cmake -A X64 -DCMAKE_PREFIX_PATH="$env:BUILD_BUILDDIRECTORY\dist;$env:BUILD_BUILD_DIRECTORY\vcpkg_installed\x64-windows-mod" ..
 
           cmake --build . --config $CMakeBuildType -v
 
