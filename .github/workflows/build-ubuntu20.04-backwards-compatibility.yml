@@ -4,6 +4,10 @@ on:
 
 env:
   CXX: g++
+  SCCACHE_BUCKET: tiledb-ci-cache
+  SCCACHE_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
+  SCCACHE_S3_KEY_PREFIX: tiledb-core/sccache/
+  VCPKG_BINARY_SOURCES: 'clear;x-aws,s3://tiledb-ci-cache/tiledb-core/vcpkg/,readwrite'
 
 jobs:
   build:
