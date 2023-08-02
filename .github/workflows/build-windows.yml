@@ -473,7 +473,7 @@ jobs:
         shell: bash
         run: |
           cd $BUILD_BUILDDIRECTORY
-          for f in $(find . -name *.log); do
+          for f in $(find . -name "*.log"); do
             echo "::group::$f"
             cat $f
             echo "::endgroup::"

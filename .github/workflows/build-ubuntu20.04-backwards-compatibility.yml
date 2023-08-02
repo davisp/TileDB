@@ -160,7 +160,7 @@ jobs:
       - name: Print Log Files On Failed Builds
         run: |
           cd $GITHUB_WORKSPACE/build
-          for f in $(find . -name *.log); do
+          for f in $(find . -name "*.log"); do
             echo "::group::$f"
             cat $f
             echo "::endgroup::"
