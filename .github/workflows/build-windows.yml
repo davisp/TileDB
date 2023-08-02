@@ -438,7 +438,7 @@ jobs:
           path: |
             ${{ env.TDBLOCALAPPDATA }}/CrashDumps/*.dmp
 
-      - name: 'Test Status Check'
+      - name: Test Status Check
         shell: bash
         run: |
           # tiledb_unit is configured to set a job-level variable TILEDB_CI_SUCCESS=1
@@ -449,7 +449,7 @@ jobs:
             exit 1;
           fi
 
-      - name: "Print Log Files On Failed Builds"
+      - name: Print Log Files On Failed Builds
         if: ${{ failure() }} # only run this job if the build step failed
         shell: bash
         run: |
