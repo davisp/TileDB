@@ -301,7 +301,7 @@ if (![string]::IsNullOrEmpty($Dependency)) {
 $GeneratorFlag = ""
 $ArchitectureFlag = ""
 if ($PSBoundParameters.ContainsKey("CMakeGenerator")) {
-    $GeneratorFlag = "-G" "$CMakeGenerator"""
+    $GeneratorFlag = "-G $CMakeGenerator"
 } else {
     $ArchitectureFlag = "-A X64"
 }
