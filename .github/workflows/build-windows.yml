@@ -11,7 +11,7 @@ env:
   TILEDB_SERIALIZATION: OFF
   TILEDB_STATIC: OFF
   TILEDB_TOOLS: ON
-  TILEDB_BASE_BOOTSTRAP_OPTIONS: '-CMakeGenerator Ninja -EnableVcpkg -EnableCCache -EnableVerbose -EnableStaticTileDB'
+  TILEDB_BASE_BOOTSTRAP_OPTIONS: '-EnableVcpkg -EnableCCache -EnableVerbose -EnableStaticTileDB'
 
 jobs:
   build:
@@ -121,9 +121,6 @@ jobs:
           R2_S3_ENDPOINT: ${{ secrets.R2_S3_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-
-      - name: Setup Ninja
-        uses: seanmiddleditch/gha-setup-ninja@v3
 
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.3

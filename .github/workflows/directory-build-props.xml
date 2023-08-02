@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <CLToolExe>cl.exe</CLToolExe>
+    <CLToolPath>${CMAKE_BIN_DIR}</CLToolPath>
+    <UseMultiToolTask>true</UseMultiToolTask>
+    <TrackFileAccess>false</TrackFileAccess>
+    <EnforceProcessCountAcrossBuilds>true</EnforceProcessCountAcrossBuilds>
+  </PropertyGroup>
+</Project>

@@ -16,13 +16,11 @@ if (CCACHE_FOUND)
 
   if (WIN32)
     file(COPY_FILE ${CCACHE_FOUND} ${CMAKE_BINARY_DIR}/cl.exe ONLY_IF_DIFFERENT)
-
-    set(CMAKE_VS_GLOBALS
-      "CLToolExe=cl.exe"
-      "CLToolPath=${CMAKE_BINARY_DIR}"
-      "TrackFileAccess=false"
-      "UseMultiToolTask=true"
-      "DebugInformationFormat=OldStyle"
+    configure_file(
+      "${CMAKE_SOURCE_DIR}/.github/workflows/directory-build-props.xml"
+      "${CMAKE_SOURCE_DIR}/Directory.build.props"
+      USE_SOURCE_PERMISSIONS
+      NEWLINE_STYLE WIN32
     )
   endif()
 else()
