@@ -472,6 +472,13 @@ jobs:
         if: ${{ failure() }} # only run this job if the build step failed
         shell: bash
         run: |
+          cd $BUILD_SOURCEDIRECTORY
+          for f in $(find . -name "*.log"); do
+            echo "::group::$f"
+            cat $f
+            echo "::endgroup::"
+          done
+
           cd $BUILD_BUILDDIRECTORY
           for f in $(find . -name "*.log"); do
             echo "::group::$f"

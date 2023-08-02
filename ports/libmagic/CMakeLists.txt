@@ -128,7 +128,7 @@ foreach(MAGIC_FRAGMENT ${MAGIC_FRAGMENTS})
 endforeach()
 
 add_custom_command(OUTPUT magic.mgc
-  COMMAND file -C
+  COMMAND file -C -m ${CMAKE_CURRENT_BINARY_DIR}/magic
   COMMENT "Compiling magic file"
 )
 
