@@ -123,7 +123,7 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
       - name: Setup Ninja
-        uses: seanmiddleditch/gha-setup-ninja
+        uses: seanmiddleditch/gha-setup-ninja@v3
 
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.3
