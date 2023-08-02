@@ -126,6 +126,7 @@ jobs:
         uses: mozilla-actions/sccache-action@v0.0.3
 
       - name: Configure TileDB
+        shell: powershell
         run: |
           $ErrorView = "NormalView"
 
@@ -197,9 +198,9 @@ jobs:
             Write-Host "Bootstrap failed."
             exit $LastExitCode
           }
-        shell: powershell
 
       - name: Build TileDB
+        shell: powershell
         run: |
           cmake --build $env:BUILD_BUILDDIRECTORY --config $CMakeBuildType -j $env:NUMBER_OF_PROCESSORS 2>&1
 
@@ -214,9 +215,9 @@ jobs:
             Write-Host "Installation failed."
             $host.SetShouldExit($LastExitCode)
           }
-        shell: powershell
 
       - name: Build Tests
+        shell: powershell
         run: |
           if ($env:TILEDB_S3 -eq "ON") {
             # $env:MINIO_ACCESS_KEY = "minio"
@@ -235,7 +236,6 @@ jobs:
           cmake --build $env:BUILD_BUILDDIRECTORY\tiledb -j $env:NUMBER_OF_PROCESSORS --target tiledb_unit --config $CMakeBuildType -- /verbosity:minimal
           cmake --build $env:BUILD_BUILDDIRECTORY\tiledb -j $env:NUMBER_OF_PROCESSORS --target tiledb_regression --config $CMakeBuildType -- /verbosity:minimal
           cmake --build $env:BUILD_BUILDDIRECTORY\tiledb -j $env:NUMBER_OF_PROCESSORS --target all_link_complete --config $CMakeBuildType -- /verbosity:minimal
-        shell: powershell
 
       - name: Run Tests
         id: test
@@ -299,9 +299,9 @@ jobs:
                $host.SetShouldExit($LastExitCode)
             }
           }
-        shell: powershell
 
       - name: Build Examples
+        shell: powershell
         run: |
           # Build the examples
           cmake --build $env:BUILD_BUILDDIRECTORY --target examples --config $CMakeBuildType -v
@@ -310,9 +310,9 @@ jobs:
             Write-Host "Examples failed to build."
             $host.SetShouldExit($LastExitCode)
           }
-        shell: powershell
 
       - name: Run Examples
+        shell: powershell
         run: |
           $env:Path += ";$env:BUILD_BUILDDIRECTORY\dist\bin;$env:BUILD_BUILDDIRECTORY\externals\install\bin"
 
@@ -381,9 +381,9 @@ jobs:
           }
           Set-Location -path $TestAppDir
           Remove-Item -Path $TestAppDataDir -recurse -force -ErrorAction SilentlyContinue
-        shell: powershell
 
       - name: Build Example Project
+        shell: powershell
         run: |
           # Build examples
           cd $env:BUILD_SOURCESDIRECTORY\examples\cmake_project
@@ -414,7 +414,6 @@ jobs:
           cmake -DCMAKE_PREFIX_PATH="$env:BUILD_BUILDDIRECTORY\dist" ..
           # The testing is in the test/packaging/CMakeLists.txt file, just invoked,
           # there is no other code to be built in the produced projects.
-        shell: powershell
 
       - name: Process Crash Dumps
         shell: cmd
@@ -451,6 +450,7 @@ jobs:
           fi
 
       - name: "Print Log Files On Failed Builds"
+        if: ${{ failure() }} # only run this job if the build step failed
         shell: bash
         run: |
           source $GITHUB_WORKSPACE/scripts/ci/print_logs.sh
@@ -458,4 +458,3 @@ jobs:
           find $BUILD_BUILDDIRECTORY/dist
           echo "# --------vcpkg----------------------------"
           find $BUILD_BUILDDIRECTORY/vcpkg_installed
-        if: ${{ failure() }} # only run this job if the build step failed
