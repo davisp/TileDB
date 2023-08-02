@@ -18,7 +18,21 @@ if (CCACHE_FOUND)
     file(COPY_FILE ${CCACHE_FOUND} ${CMAKE_BINARY_DIR}/cl.exe ONLY_IF_DIFFERENT)
     configure_file(
       "${CMAKE_SOURCE_DIR}/.github/workflows/directory-build-props.xml"
-      "${CMAKE_SOURCE_DIR}/Directory.build.props"
+      "${CMAKE_SOURCE_DIR}/Directory.Build.props"
+      USE_SOURCE_PERMISSIONS
+      NEWLINE_STYLE WIN32
+    )
+    file(READ "${CMAKE_SOURCE_DIR}/Directory.Build.props" BUILD_PROPS_STUFF)
+    message("Build Props: ${BUILD_PROPS_STUFF}")
+    configure_file(
+      "${CMAKE_SOURCE_DIR}/.github/workflows/directory-build-props.xml"
+      "${CMAKE_BINARY_DIR}/Directory.Build.props"
+      USE_SOURCE_PERMISSIONS
+      NEWLINE_STYLE WIN32
+    )
+    configure_file(
+      "${CMAKE_SOURCE_DIR}/.github/workflows/directory-build-props.xml"
+      "${CMAKE_BINARY_DIR}/tiledb/Directory.Build.props"
       USE_SOURCE_PERMISSIONS
       NEWLINE_STYLE WIN32
     )
