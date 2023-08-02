@@ -122,6 +122,9 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
+      - name: Setup MSBuild Environment
+        uses: ilammy/msvc-dev-cmd@v1.12.1
+
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@v3
 
