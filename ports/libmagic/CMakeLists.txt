@@ -127,12 +127,12 @@ foreach(MAGIC_FRAGMENT ${MAGIC_FRAGMENTS})
   unset(MAGIC_FRAGMENT_CONTENTS)
 endforeach()
 
-add_custom_command(OUTPUT magic.mgc
-  COMMAND file -C -m magic
-  COMMENT "Compiling magic file"
-)
-
-add_custom_target(magic_mgc ALL DEPENDS magic.mgc)
+# add_custom_command(OUTPUT magic.mgc
+#   COMMAND file -C -m magic
+#   COMMENT "Compiling magic file"
+# )
+#
+# add_custom_target(magic_mgc ALL DEPENDS magic.mgc)
 
 # Include module with function 'configure_package_config_file'
 include(CMakePackageConfigHelpers)
