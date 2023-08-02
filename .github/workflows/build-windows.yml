@@ -57,7 +57,7 @@ jobs:
       VCPKG_BINARY_SOURCES: 'clear;x-aws,s3://tiledb-ci-cache/tiledb-core/vcpkg/,readwrite'
 
     steps:
-      - name: 'tiledb env prep'
+      - name: Prepare Environment
         run: |
           $env:BUILD_BUILDDIRECTORY = $env:GITHUB_WORKSPACE.replace("TileDB\TileDB","tdbbd") # 't'ile'db' 'b'uild 'd'ir
           $env:BUILD_SOURCESDIRECTORY = $env:GITHUB_WORKSPACE
@@ -72,12 +72,12 @@ jobs:
           write-host "BUILD_BUILDDIRECTORY=$env:BUILD_BUILDDIRECTORY" *>> $env:GITHUB_ENV
           write-host "BUILD_SOURCESDIRECTORY=$env:BUILD_SOURCESDIRECTORY" *>> $env:GITHUB_ENV
 
-      - name: 'Print env'
+      - name: Print Env
         shell: cmd
         run: |
           set
 
-      - name: 'dump file prep'
+      - name: Configure Dump Files
         shell: cmd
         run: |
           reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps" /v DumpType /t REG_DWORD /d 2 /f
@@ -86,7 +86,7 @@ jobs:
           reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps" /v DumpFolder
           reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps" /v DumpCount
 
-      - name: 'proxy localappdata'
+      - name: Proxy Local App Data
         shell: pwsh
         run: |
           #so, apparently env context is *NOT* populated from runner machine environ...
@@ -97,7 +97,7 @@ jobs:
           #but, it seems *we* can populate our own var from our actions, and access it in file upload...
           echo TDBLOCALAPPDATA=$env:LOCALAPPDATA >> "$env:GITHUB_ENV"
 
-      - name: ARROW python needs
+      - name: Install Python Arrow Dependencies
         shell: bash
         if: ${{ matrix.TILEDB_ARROW_TESTS == 'ON' }}
         run: |
@@ -106,10 +106,11 @@ jobs:
             pip install pyarrow pybind11 numpy
           fi
 
-      - name: Prepare git
+      - name: Prepare Git
         run: git config --global core.autocrlf false
 
-      - uses: actions/checkout@v3
+      - name: Checkout TileDB
+        uses: actions/checkout@v3
         with:
           submodules: true
           fetch-depth: 0
@@ -124,29 +125,7 @@ jobs:
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.3
 
-      - name: Prevent vcpkg from building debug variants
-        shell: python
-        run: |
-          import os
-
-          workspace = os.environ["GITHUB_WORKSPACE"]
-          triplets = os.path.join(workspace, "external", "vcpkg", "triplets")
-
-          for path, dnames, fnames in os.walk(triplets):
-            for fname in fnames:
-              fname = os.path.join(path, fname)
-              print(fname)
-              with open(fname, "rb") as handle:
-                contents = handle.read()
-              # If a file is already patched we skip patching it again because
-              # this affects the hashes calculated by vcpkg for caching
-              if b"VCPKG_BUILD_TYPE release" in contents:
-                continue
-              contents += b"\nset(VCPKG_BUILD_TYPE release)\n"
-              with open(fname, "wb") as handle:
-                handle.write(contents)
-
-      - name: core tiledb windows build
+      - name: Configure TileDB
         run: |
           $ErrorView = "NormalView"
 
@@ -218,7 +197,10 @@ jobs:
             Write-Host "Bootstrap failed."
             exit $LastExitCode
           }
+        shell: powershell
 
+      - name: Build TileDB
+        run: |
           cmake --build $env:BUILD_BUILDDIRECTORY --config $CMakeBuildType -j $env:NUMBER_OF_PROCESSORS 2>&1
 
           if ($LastExitCode -ne 0) {
@@ -234,24 +216,13 @@ jobs:
           }
         shell: powershell
 
-      - name: 'Test'
-        id: test
-        shell: powershell
+      - name: Build Tests
         run: |
-          write-host "begin run: 'Test'"
-
-          $CMakeBuildType = $env:TILEDB_CMAKE_BUILD_TYPE
-
-          # Clone backwards compatibility test arrays
-          if ($env:BACKWARDS_COMPATIBILITY_ARRAYS -eq "ON") {
-            git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git --branch 2.5.0 $env:BUILD_SOURCESDIRECTORY/test/inputs/arrays/read_compatibility_test
-          }
-
           if ($env:TILEDB_S3 -eq "ON") {
-            $env:MINIO_ACCESS_KEY = "minio"
-            $env:MINIO_SECRET_KEY = "miniosecretkey"
-            $env:AWS_ACCESS_KEY_ID = "minio"
-            $env:AWS_SECRET_ACCESS_KEY = "miniosecretkey"
+            # $env:MINIO_ACCESS_KEY = "minio"
+            # $env:MINIO_SECRET_KEY = "miniosecretkey"
+            # $env:AWS_ACCESS_KEY_ID = "minio"
+            # $env:AWS_SECRET_ACCESS_KEY = "miniosecretkey"
             # TODO DEBUG move this back in the TILEDB_S3 section
             # currently we do not run S3 tests on Windows because tests time out (minio+azure slow?)
             # & "$env:BUILD_SOURCESDIRECTORY\scripts\install-minio.ps1"
@@ -264,6 +235,18 @@ jobs:
           cmake --build $env:BUILD_BUILDDIRECTORY\tiledb -j $env:NUMBER_OF_PROCESSORS --target tiledb_unit --config $CMakeBuildType -- /verbosity:minimal
           cmake --build $env:BUILD_BUILDDIRECTORY\tiledb -j $env:NUMBER_OF_PROCESSORS --target tiledb_regression --config $CMakeBuildType -- /verbosity:minimal
           cmake --build $env:BUILD_BUILDDIRECTORY\tiledb -j $env:NUMBER_OF_PROCESSORS --target all_link_complete --config $CMakeBuildType -- /verbosity:minimal
+        shell: powershell
+
+      - name: Run Tests
+        id: test
+        shell: powershell
+        run: |
+          $CMakeBuildType = $env:TILEDB_CMAKE_BUILD_TYPE
+
+          # Clone backwards compatibility test arrays
+          if ($env:BACKWARDS_COMPATIBILITY_ARRAYS -eq "ON") {
+            git clone https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git --branch 2.5.0 $env:BUILD_SOURCESDIRECTORY/test/inputs/arrays/read_compatibility_test
+          }
 
           if ($env:TILEDB_AZURE -eq "ON") {
             if($env.TILEDB_USE_CUSTOM_NODE_JS) {
@@ -316,6 +299,10 @@ jobs:
                $host.SetShouldExit($LastExitCode)
             }
           }
+        shell: powershell
+
+      - name: Build Examples
+        run: |
           # Build the examples
           cmake --build $env:BUILD_BUILDDIRECTORY --target examples --config $CMakeBuildType -v
 
@@ -323,7 +310,10 @@ jobs:
             Write-Host "Examples failed to build."
             $host.SetShouldExit($LastExitCode)
           }
+        shell: powershell
 
+      - name: Run Examples
+        run: |
           $env:Path += ";$env:BUILD_BUILDDIRECTORY\dist\bin;$env:BUILD_BUILDDIRECTORY\externals\install\bin"
 
           $TestAppDir = (Join-Path $env:BUILD_BUILDDIRECTORY "tiledb\examples\c_api")
@@ -391,7 +381,10 @@ jobs:
           }
           Set-Location -path $TestAppDir
           Remove-Item -Path $TestAppDataDir -recurse -force -ErrorAction SilentlyContinue
+        shell: powershell
 
+      - name: Build Example Project
+        run: |
           # Build examples
           cd $env:BUILD_SOURCESDIRECTORY\examples\cmake_project
 
@@ -421,8 +414,9 @@ jobs:
           cmake -DCMAKE_PREFIX_PATH="$env:BUILD_BUILDDIRECTORY\dist" ..
           # The testing is in the test/packaging/CMakeLists.txt file, just invoked,
           # there is no other code to be built in the produced projects.
+        shell: powershell
 
-      - name: 'process crashdumps'
+      - name: Process Crash Dumps
         shell: cmd
         if: ${{ failure() == true && startsWith(matrix.os, 'windows-') == true }} # only run this job if the build step failed
         run: |
@@ -434,7 +428,7 @@ jobs:
             for /r %%f in (*.dmp) do "c:\Program Files (x86)\Windows Kits\10\Debuggers\x64\cdb.exe" -z %%f -c "!analyze;~* kv;kP;r;u;q"
           :nodumps1
 
-      - name: 'upload dumpfile artifacts' # https://github.com/actions/upload-artifact#where-does-the-upload-go
+      - name: Upload Dump Artifacts # https://github.com/actions/upload-artifact#where-does-the-upload-go
         if: ${{ always() == true && startsWith(matrix.os, 'windows-') == true }} # only run this job if the build step failed
         uses: actions/upload-artifact@v3
         with:
@@ -445,7 +439,7 @@ jobs:
           path: |
             ${{ env.TDBLOCALAPPDATA }}/CrashDumps/*.dmp
 
-      - name: 'Test status check'
+      - name: 'Test Status Check'
         shell: bash
         run: |
           # tiledb_unit is configured to set a job-level variable TILEDB_CI_SUCCESS=1
@@ -456,7 +450,7 @@ jobs:
             exit 1;
           fi
 
-      - name: "Print log files (failed build only)"
+      - name: "Print Log Files On Failed Builds"
         shell: bash
         run: |
           source $GITHUB_WORKSPACE/scripts/ci/print_logs.sh
