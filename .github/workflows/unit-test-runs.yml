@@ -79,7 +79,7 @@ jobs:
 
       - name: Print Log Files On Failed Builds
         run: |
-          cd $GITHUB_WORKSPACE/build
+          cd $GITHUB_WORKSPACE
           for f in $(find . -name "*.log"); do
             echo "::group::$f"
             cat $f
