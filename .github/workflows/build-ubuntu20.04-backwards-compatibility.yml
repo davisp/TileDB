@@ -131,6 +131,8 @@ jobs:
           ulimit -c unlimited
           ulimit -c
 
+          cd $GITHUB_WORKSPACE
+
           # we clone the latest version, because we are specifying the
           # test target version in the TILEDB_COMPATIBILITY_VERSION variable
           git clone --depth=1 https://github.com/TileDB-Inc/TileDB-Unit-Test-Arrays.git --branch main test/inputs/arrays/read_compatibility_test
@@ -157,7 +159,8 @@ jobs:
 
       - name: Print Log Files On Failed Builds
         run: |
-          for f in $(find $GITHUB_WORKSPACE/build -name *.log); do
+          cd $GITHUB_WORKSPACE/build
+          for f in $(find . -name *.log); do
             echo "::group::$f"
             cat $f
             echo "::endgroup::"

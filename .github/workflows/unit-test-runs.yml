@@ -48,7 +48,7 @@ jobs:
       - name: Configure TileDB
         run: |
           mkdir -p $GITHUB_WORKSPACE/build
-          pushd $GITHUB_WORKSPACE/build
+          cd $GITHUB_WORKSPACE/build
 
           cmake .. \
             -DTILEDB_VCPKG=ON \
@@ -62,21 +62,25 @@ jobs:
 
       - name: Build TileDB
         run: |
+          cd $GITHUB_WORKSPACE/build
           make -j4
 
       - name: Build Tests
         run: |
+          cd $GITHUB_WORKSPACE/build
           make -C tiledb -j4 tests
 
       - name: Run Tests
         id: test
         run: |
+          cd $GITHUB_WORKSPACE/build
           make -C tiledb test ARGS="-R '^unit_'" -R "test_assert"
           make -C tiledb test ARGS="-R 'test_ci_asserts'"
 
       - name: Print Log Files On Failed Builds
         run: |
-          for f in $(find $GITHUB_WORKSPACE/build -name *.log); do
+          cd $GITHUB_WORKSPACE/build
+          for f in $(find . -name *.log); do
             echo "::group::$f"
             cat $f
             echo "::endgroup::"

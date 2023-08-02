@@ -461,18 +461,19 @@ jobs:
         if: ${{ failure() }} # only run this job if the build step failed
         shell: bash
         run: |
-          for f in $(find $BUILD_BUILDDIRECTORY -name *.log); do
+          cd $BUILD_BUILDDIRECTORY
+          for f in $(find . -name *.log); do
             echo "::group::$f"
             cat $f
             echo "::endgroup::"
           done
 
           echo "# List dist"
-          if [ -d $BUILD_DIRECTORY/dist ]; then
-            find $BUILD_BUILDDIRECTORY/dist
+          if [ -d dist ]; then
+            find dist | sort
           fi
 
           echo "# List vcpkg_installed"
-          if [ -d $BUILD_BUILDDIRECTORY/vcpkg_installed ]; then
-            find $BUILD_BUILDDIRECTORY/vcpkg_installed
+          if [ -d vcpkg_installed ]; then
+            find vcpkg_installed | sort
           fi
