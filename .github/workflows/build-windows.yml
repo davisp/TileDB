@@ -199,6 +199,12 @@ jobs:
             exit $LastExitCode
           }
 
+      - name: Build Props?
+        shell: bash
+        run: |
+          cd $GITHUB_WORKSPACE
+          find . -name "*.props"
+
       - name: Build TileDB
         shell: powershell
         run: |

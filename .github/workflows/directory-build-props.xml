@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <CLToolExe>cl.exe</CLToolExe>
-    <CLToolPath>${CMAKE_BIN_DIR}</CLToolPath>
+    <CLToolPath>${CMAKE_BINARY_DIR}</CLToolPath>
     <UseMultiToolTask>true</UseMultiToolTask>
     <TrackFileAccess>false</TrackFileAccess>
     <EnforceProcessCountAcrossBuilds>true</EnforceProcessCountAcrossBuilds>
