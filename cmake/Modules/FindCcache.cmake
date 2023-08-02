@@ -14,3 +14,15 @@ if (CCACHE_FOUND AND CCACHE_SUPPORT)
 else()
   message(FATAL_ERROR "Unable to find ccache")
 endif()
+
+if (WIN32 AND CCACHE_FOUND AND CCACHE_SUPPORT)
+  file(COPY_FILE ${CCACHE_FOUND} ${CMAKE_BINARY_DIR}/cl.exe ONLY_IF_DIFFERENT)
+
+  set(CMAKE_VS_GLOBALS
+    "CLToolExe=cl.exe"
+    "CLToolPath=${CMAKE_BINARY_DIR}"
+    "TrackFileAccess=false"
+    "UseMultiToolTask=true"
+    "DebugInformationFormat=OldStyle"
+  )
+endif()
