@@ -138,7 +138,7 @@ jobs:
       - name: Build Examples
         run: |
           cd $GITHUB_WORKSPACE/build
-          make -C build -j4 examples
+          make -j4 examples
 
       - name: Run Examples
         run: |
