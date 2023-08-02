@@ -135,17 +135,16 @@ jobs:
 
           source $GITHUB_WORKSPACE/scripts/ci/posix/build-services-stop.sh
 
+          cd $GITHUB_WORKSPACE
+
       - name: Build Examples
-        run: |
-          make -C $GITHUB_WORKSPACE/build -j3 examples
+        run: make -C build -j4 examples
 
       - name: Run Examples
-        run: |
-          source $GITHUB_WORKSPACE/scripts/run-nix-examples.sh
+        run: ./scripts/run-nix-examples.sh
 
       - name: Build Benchmarks
-        run: |
-          source $GITHUB_WORKSPACE/scripts/ci/build_benchmarks.sh
+        run: ./scripts/ci/build_benchmarks.sh
 
       - name: Dump Core Stacks on Failure
         if: ${{ failure() && startsWith(matrix.os, 'ubuntu-') == true }} # only run this job if the build step failed
