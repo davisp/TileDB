@@ -90,6 +90,9 @@ add_library(libmagic ${LIBMAGIC_SOURCE_FILES})
 set(targets ${targets} libmagic)
 
 target_link_libraries(libmagic PRIVATE pcre2::pcre2-posix)
+if (WIN32)
+  target_link_libraries(libmagic PRIVATE shlwapi)
+endif()
 
 target_include_directories(libmagic
   PUBLIC
