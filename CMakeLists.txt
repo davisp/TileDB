@@ -165,6 +165,11 @@ set(TILEDB_EP_INSTALL_PREFIX "${TILEDB_EP_BASE}/install")
 # Compile options/definitions for all targets
 ############################################################
 
+# Setup ccache if requested
+if (TILEDB_CCACHE)
+  include(FindCcache)
+endif()
+
 # NOTE: Config-specific options must use the $<CONFIG> generator expression
 #       and not check the value of CMAKE_BUILD_TYPE. The reason is that
 #       the latter is not set when using multi-config generators like

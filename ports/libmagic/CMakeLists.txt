@@ -90,6 +90,9 @@ add_library(libmagic ${LIBMAGIC_SOURCE_FILES})
 set(targets ${targets} libmagic)
 
 target_link_libraries(libmagic PRIVATE pcre2::pcre2-posix)
+if (WIN32)
+  target_link_libraries(libmagic PRIVATE shlwapi)
+endif()
 
 target_include_directories(libmagic
   PUBLIC
@@ -125,7 +128,7 @@ foreach(MAGIC_FRAGMENT ${MAGIC_FRAGMENTS})
 endforeach()
 
 add_custom_command(OUTPUT magic.mgc
-  COMMAND file -C -m magic
+  COMMAND file -C -m ${CMAKE_CURRENT_BINARY_DIR}/magic
   COMMENT "Compiling magic file"
 )
 

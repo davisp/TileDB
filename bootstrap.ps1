@@ -43,6 +43,9 @@ Enable verbose status messages.
 .PARAMETER EnableVcpkg
 Enables building dependencies with vcpkg.
 
+.PARAMETER EnableCCache
+Enables the use of ccache or sccache when installed.
+
 .PARAMETER EnableAzure
 Enables building with the Azure storage backend.
 
@@ -119,6 +122,7 @@ Param(
     [switch]$EnableCoverage,
     [switch]$EnableVerbose,
     [switch]$EnableVcpkg,
+    [switch]$EnableCCache,
     [switch]$EnableAzure,
     [switch]$EnableS3,
     [switch]$EnableSerialization,
@@ -186,6 +190,12 @@ if ($EnableVerbose.IsPresent) {
 $UseVcpkg = "OFF"
 if ($EnableVcpkg.IsPresent) {
     $UseVcpkg = "ON"
+}
+
+# Set ccache flag
+$UseCCache = "OFF"
+if ($EnableCCache.IsPresent) {
+    $UseCCache = "ON"
 }
 
 # Set TileDB Azure flag
@@ -289,8 +299,11 @@ if (![string]::IsNullOrEmpty($Dependency)) {
 
 # Set CMake generator type.
 $GeneratorFlag = ""
+$ArchitectureFlag = ""
 if ($PSBoundParameters.ContainsKey("CMakeGenerator")) {
-    $GeneratorFlag = "-G""$CMakeGenerator"""
+    $GeneratorFlag = "-G $CMakeGenerator"
+} else {
+    $ArchitectureFlag = "-A X64"
 }
 
 # Enforce out-of-source build
@@ -308,7 +321,7 @@ if ($CMakeGenerator -eq $null) {
 
 # Run CMake.
 # We use Invoke-Expression so we can echo the command to the user.
-$CommandString = "cmake -A X64 -DTILEDB_VCPKG=$UseVcpkg -DCMAKE_BUILD_TYPE=$BuildType -DCMAKE_INSTALL_PREFIX=""$InstallPrefix"" -DCMAKE_PREFIX_PATH=""$DependencyDir"" -DMSVC_MP_FLAG=""/MP$BuildProcesses"" -DTILEDB_ASSERTIONS=$AssertionMode -DTILEDB_VERBOSE=$Verbosity -DTILEDB_AZURE=$UseAzure -DTILEDB_S3=$UseS3 -DTILEDB_SERIALIZATION=$UseSerialization -DTILEDB_WERROR=$Werror -DTILEDB_CPP_API=$CppApi -DTILEDB_TESTS=$Tests -DTILEDB_STATS=$Stats -DTILEDB_STATIC=$TileDBStatic -DTILEDB_FORCE_ALL_DEPS=$TileDBBuildDeps -DTILEDB_REMOVE_DEPRECATIONS=$RemoveDeprecations -DTILEDB_TOOLS=$TileDBTools -DTILEDB_EXPERIMENTAL_FEATURES=$TileDBExperimentalFeatures -DTILEDB_WEBP=$BuildWebP -DTILEDB_CRC32=$BuildCrc32 -DTILEDB_ARROW_TESTS=$ArrowTests -DTILEDB_TESTS_ENABLE_REST=$RestTests -DTILEDB_TESTS_AWS_S3_CONFIG=$ConfigureS3 $GeneratorFlag ""$SourceDirectory"""
+$CommandString = "cmake $GeneratorFlag $ArchitectureFlag -DTILEDB_VCPKG=$UseVcpkg -DTILEDB_CCACHE=$UseCCache -DCMAKE_BUILD_TYPE=$BuildType -DCMAKE_INSTALL_PREFIX=""$InstallPrefix"" -DCMAKE_PREFIX_PATH=""$DependencyDir"" -DMSVC_MP_FLAG=""/MP$BuildProcesses"" -DTILEDB_ASSERTIONS=$AssertionMode -DTILEDB_VERBOSE=$Verbosity -DTILEDB_AZURE=$UseAzure -DTILEDB_S3=$UseS3 -DTILEDB_SERIALIZATION=$UseSerialization -DTILEDB_WERROR=$Werror -DTILEDB_CPP_API=$CppApi -DTILEDB_TESTS=$Tests -DTILEDB_STATS=$Stats -DTILEDB_STATIC=$TileDBStatic -DTILEDB_FORCE_ALL_DEPS=$TileDBBuildDeps -DTILEDB_REMOVE_DEPRECATIONS=$RemoveDeprecations -DTILEDB_TOOLS=$TileDBTools -DTILEDB_EXPERIMENTAL_FEATURES=$TileDBExperimentalFeatures -DTILEDB_WEBP=$BuildWebP -DTILEDB_CRC32=$BuildCrc32 -DTILEDB_ARROW_TESTS=$ArrowTests -DTILEDB_TESTS_ENABLE_REST=$RestTests -DTILEDB_TESTS_AWS_S3_CONFIG=$ConfigureS3 ""$SourceDirectory"""
 Write-Host $CommandString
 Write-Host
 Invoke-Expression "$CommandString"
