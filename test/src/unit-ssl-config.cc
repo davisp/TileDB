@@ -252,9 +252,14 @@ void check_failure(Filesystem fs, Config& cfg) {
   Context ctx(cfg);
   auto& vfs = ctx.resources().vfs();
 
+  std::cerr << "Checking Filesystem: " << filesystem_str(fs) << std::endl;
+
   if (!vfs.supports_fs(fs)) {
+    std::cerr << "FS *NOT* SUPPORTED: " << filesystem_str(fs) << std::endl;
     return;
   }
+
+  std::cerr << "FS SUPPORTED: " << filesystem_str(fs) << std::endl;
 
   std::string scheme;
 
@@ -290,9 +295,14 @@ void check_success(Filesystem fs, Config& cfg) {
   Context ctx(cfg);
   auto& vfs = ctx.resources().vfs();
 
+  std::cerr << "Checking Filesystem: " << filesystem_str(fs) << std::endl;
+
   if (!vfs.supports_fs(fs)) {
+    std::cerr << "FS *NOT* SUPPORTED: " << filesystem_str(fs) << std::endl;
     return;
   }
+
+  std::cerr << "FS SUPPORTED: " << filesystem_str(fs) << std::endl;
 
   std::string scheme;
 
