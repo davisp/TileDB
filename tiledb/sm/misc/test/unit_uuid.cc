@@ -31,57 +31,120 @@
  */
 
 #include <test/support/tdb_catch.h>
-#include <set>
 #include <thread>
 #include <vector>
 
-#include "tiledb/sm/global_state/global_state.h"
+#include "tiledb/sm/misc/tdb_time.h"
 #include "tiledb/sm/misc/uuid.h"
 
 using namespace tiledb::sm;
 
-std::mutex catch2_macro_mutex;
-
-// A thread-safe variant of the REQUIRE macro.
-#define REQUIRE_SAFE(a)                                   \
-  {                                                       \
-    std::lock_guard<std::mutex> lock(catch2_macro_mutex); \
-    REQUIRE(a);                                           \
+size_t generate_uuids(std::vector<std::string>& uuids) {
+  size_t uuids_size = uuids.size();
+  auto now = utils::time::timestamp_now_ms();
+  size_t idx = 0;
+  while ((utils::time::timestamp_now_ms()) < now + 100 && idx < uuids_size) {
+    uuids[idx++] = uuid::generate_uuid();
   }
-
-void cancel_all_tasks(StorageManager*) {
+  return idx;
 }
 
-TEST_CASE("UUID: Test generate", "[uuid]") {
-  SECTION("- Serial") {
-    std::string uuid0, uuid1, uuid2;
-    REQUIRE(uuid::generate_uuid(&uuid0).ok());
-    REQUIRE(uuid0.length() == 36);
-    REQUIRE(uuid::generate_uuid(&uuid1).ok());
-    REQUIRE(uuid1.length() == 36);
-    REQUIRE(uuid0 != uuid1);
+void validate_uuids(std::vector<std::string>& uuids, size_t num_uuids) {
+  // The contents of the UUIDs vector will be a bunch of UUIDs where anything
+  // generated in the same millisecond shares a prefix that is being
+  // incremented. Seriously, try throwing a log statement in this loop. Its
+  // fancy.
+  //
+  // The logic for asserting this can't be overly prescriptive given the exact
+  // contents of the UUIDs vector will have an unknown number of entries given
+  // we're just racing the processor and entropy pools. Best I can think of is
+  // to just assert that we've got more than 5 groups that have more than
+  // 10 members each. Groups are detected as having the same first four bytes.
+  uint64_t num_groups = 0;
+  uint64_t this_group = 0;
+  for (size_t i = 1; i < num_uuids; i++) {
+    bool match = true;
+    for (size_t j = 0; j < 4; j++) {
+      if (uuids[i - 1][j] != uuids[i][j]) {
+        match = false;
+        break;
+      }
+    }
+    if (!match) {
+      if (this_group > 10) {
+        num_groups += 1;
+      }
+      this_group = 0;
+      continue;
+    }
 
-    REQUIRE(uuid::generate_uuid(&uuid2, false).ok());
-    REQUIRE(uuid2.length() == 32);
+    // We share a prefix so assert that they're ordered.
+    REQUIRE(uuids[i] > uuids[i - 1]);
+    this_group += 1;
   }
 
-  SECTION("- Threaded") {
-    const unsigned nthreads = 20;
-    std::vector<std::string> uuids(nthreads);
-    std::vector<std::thread> threads;
-    for (unsigned i = 0; i < nthreads; i++) {
-      threads.emplace_back([&uuids, i]() {
-        std::string& uuid = uuids[i];
-        REQUIRE_SAFE(uuid::generate_uuid(&uuid).ok());
-        REQUIRE_SAFE(uuid.length() == 36);
-      });
-    }
-    for (auto& t : threads) {
-      t.join();
-    }
-    // Check uniqueness
-    std::set<std::string> uuid_set;
-    uuid_set.insert(uuids.begin(), uuids.end());
-    REQUIRE(uuid_set.size() == uuids.size());
+  REQUIRE(num_groups > 10);
+}
+
+TEST_CASE("Seriali UUID Generation", "[uuid][serial]") {
+  // Generate a UUID to make sure we've primed all the initialization.
+  auto uuid = uuid::generate_uuid();
+  REQUIRE(uuid.size() == 32);
+
+  // A million strings should be enough for anyone.
+  std::vector<std::string> uuids{1000000};
+
+  auto num_uuids = generate_uuids(uuids);
+  validate_uuids(uuids, num_uuids);
+}
+
+TEST_CASE("Parallel UUID Generation", "[uuid][parallel]") {
+  const unsigned nthreads = 20;
+  std::vector<std::thread> threads;
+  std::vector<std::vector<std::string>> uuids{nthreads};
+  size_t num_uuids[nthreads];
+
+  // Pre-allocate our buffers so we're getting as much contention as possible
+  for (size_t i = 0; i < nthreads; i++) {
+    uuids[i].resize(1000000);
   }
+
+  // Generate UUIDs simultaneously in multiple threads.
+  for (size_t i = 0; i < nthreads; i++) {
+    auto num_ptr = &num_uuids[i];
+    auto vec_ptr = &uuids[i];
+    threads.emplace_back([num_ptr, vec_ptr]() {
+      auto num = generate_uuids(*vec_ptr);
+      *num_ptr = num;
+    });
+  }
+
+  // Wait for all of our threads to finish.
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  // Check that we've generated the correct number of unique UUIDs.
+  std::unordered_set<std::string> uuid_set;
+  size_t total_uuids = 0;
+  for (size_t i = 0; i < nthreads; i++) {
+    total_uuids += num_uuids[i];
+    for (size_t j = 0; j < num_uuids[i]; j++) {
+      uuid_set.insert(uuids[i][j]);
+    }
+  }
+  REQUIRE(uuid_set.size() == total_uuids);
+
+  // Threads fighting over who gets which UUID in the sequence means we can't
+  // really make many guarantees on what each individual thread generated.
+  // However, we can make an assertion about the combined group same as for the
+  // serial case. The sort just combines all thread generated UUIDs as if they
+  // were generated in a single thread.
+  std::vector<std::string> all_uuids{total_uuids};
+  size_t idx = 0;
+  for (auto uuid : uuid_set) {
+    all_uuids[idx++] = uuid;
+  }
+  std::sort(all_uuids.begin(), all_uuids.end());
+  validate_uuids(all_uuids, total_uuids);
 }

@@ -31,8 +31,9 @@
  */
 
 #include <mutex>
-#include <vector>
 
+#include "tiledb/common/exception/exception.h"
+#include "tiledb/sm/misc/tdb_time.h"
 #include "tiledb/sm/misc/uuid.h"
 
 #ifdef _WIN32
@@ -47,128 +48,202 @@ using namespace tiledb::common;
 
 namespace tiledb::sm::uuid {
 
-/** Mutex to guard UUID generation. */
-static std::mutex uuid_mtx;
+class UUIDException : public StatusException {
+ public:
+  explicit UUIDException(const std::string& message)
+      : StatusException("UUID", message) {
+  }
+};
+
+using BinaryUUID = std::array<uint8_t, 16>;
+
+void fill_random_bytes(BinaryUUID& buf);
+
+class UUIDGenerator {
+ public:
+  DISABLE_COPY_AND_COPY_ASSIGN(UUIDGenerator);
+  DISABLE_MOVE_AND_MOVE_ASSIGN(UUIDGenerator);
+
+  static std::string generate_uuid() {
+    static UUIDGenerator generator;
+    return generator.generate();
+  }
+
+ protected:
+  UUIDGenerator()
+      : prev_gen_time_(tiledb::sm::utils::time::timestamp_now_ms()) {
+    fill_random_bytes(prev_uuid_);
+  }
+
+  std::string generate() {
+    BinaryUUID uuid;
+    get_uuid_bytes(uuid);
+
+    // Convert our generated UUID into a string without hyphens because
+    // hyphenated UUID are a waste of time and money. It costs money to store
+    // and transmit those hyphens.
+
+    // Start with a nulled string.
+    char ret[33];
+    memset(ret, 0, 33);
+
+    // For each byte, set the appropriate hexadecimal digit.
+    char hex_lut[17] = "0123456789abcdef";
+    for (size_t bin_idx = 0; bin_idx < 16; bin_idx++) {
+      size_t hex_idx = bin_idx * 2;
+
+      // For the non-bit twiddlers out there, this might look a bit intimidating
+      // but its rather simple. Converting binary to hexadecimal just means
+      // we take the top four bits of a byte and use that as an index into the
+      // hex lookup table defined a few lines above. Then again with the lower
+      // 4 bits.
+      ret[hex_idx] = hex_lut[(uuid[bin_idx] >> 4) & 0x0F];
+      ret[hex_idx + 1] = hex_lut[uuid[bin_idx] & 0x0F];
+    }
+
+    return std::string(ret);
+  }
+
+  void get_uuid_bytes(BinaryUUID& data) {
+    std::lock_guard<std::mutex> lg(mtx_);
+
+    auto now = utils::time::timestamp_now_ms();
+    // The use of `!=` here is subtly important. If we were to use `>` instead
+    // it would lead to a broken generation algorithm any time the host
+    // machine's clock is rewound.
+    if (now != prev_gen_time_) {
+      // The easy case. We haven't generated a UUID in this millisecond so we
+      // can just generate a new one and be done.
+      prev_gen_time_ = now;
+      fill_random_bytes(prev_uuid_);
+
+      // Normally, I wouldn't bother removing entropy from the generated UUID,
+      // but just so folks don't think I'm crazy, I'll remove the 6 bits of
+      // entropy so we can call this an "official" UUIDv4 algorithm.
+
+      // Set the top four bits of byte 6 to 0x4 for the version indicator.
+      prev_uuid_[6] = 0x40 | (0x0F & prev_uuid_[6]);
+
+      // Set the top two bits of byte 8 to 01
+      prev_uuid_[8] = 0x40 | (0x3F & prev_uuid_[8]);
+
+      // Set the 0th bit of the return UUIDs to 0 so that our counter logic
+      // below works. Yes, this technically removing some entropy and if anyone
+      // ever pays attention they'll see that we rarely (but not never) return
+      // a UUID that starts with a hex digit greater than 7.
+      prev_uuid_[0] = 0x7F & prev_uuid_[0];
+
+      data = prev_uuid_;
+      return;
+    }
+
+    // Now the interesting part. The goal here is ensure that all UUIDs
+    // generated in the same milliseconds are ordered by time. You'll notice
+    // that we're not actually trying to insert time into the UUID here as
+    // that would reduce entropy. Instead, we'll just accept that a nefarious
+    // attacker *might* be able to deduce that two UUIDs were generated in the
+    // same millisecond. Yeah, that seems silly, but some folks care about
+    // things like that.
+
+    // The way we make sure that UUIDs generated in the same millisecond are
+    // ordered by time is to treat the top four bytes as a counter. Given that
+    // we always set to 0th bit to 0, this gives us a space of *at least* 2^31
+    // possible values to fill. So, this is basically safe until we can
+    // generate over 2 billion UUIDs in a millisecond. For reference, if my
+    // math is correct, that's when we get 2 *terahertz* processors that can
+    // generate a UUID in a single instruction. So, no time soon.
+
+    // Step one, add 1 to the four byte counter. Standard overflow math here.
+    // if the current val at the current index is 255, set to 0, and add 1 to
+    // the next index.
+    size_t idx = 3;
+    while (idx >= 0) {
+      if (prev_uuid_[idx] < 255) {
+        prev_uuid_[idx] += 1;
+        break;
+      } else {
+        if (idx == 0) {
+          // We've managed it! We finally did it, we created 2 billion UUIDs in
+          // a single millisecond. Or we have a terrible bug. One of the two.
+          throw UUIDException(
+              "Error generating UUID: Maximum generation frequency exceeded.");
+        }
+        prev_uuid_[idx] = 0;
+      }
+      idx--;
+    }
+
+    // The last step in generating our UUIDs is to randomize the trailing
+    // 12 bytes. We'll be a bit wasteful here and generate 16 bytes of data
+    // and only copy the 12 we need.
+    BinaryUUID new_bytes;
+    fill_random_bytes(new_bytes);
+
+    for (size_t i = 4; i < 16; i++) {
+      prev_uuid_[i] = new_bytes[i];
+    }
+
+    // Copy the newly generated UUID to the client buffer and we're done.
+    data = prev_uuid_;
+  }
+
+ private:
+  static UUIDGenerator generator_;
+
+  /** UUID generation is not thread safe. */
+  std::mutex mtx_;
+
+  /** The last UUID generated. */
+  BinaryUUID prev_uuid_;
+
+  /** The time in milliseconds of the last UUID creation. */
+  uint64_t prev_gen_time_;
+};
+
+std::string generate_uuid() {
+  return UUIDGenerator::generate_uuid();
+}
 
 #ifdef _WIN32
 
 /**
- * Generate a UUID using Win32 RPC API.
+ * Fill a buffer with random bytes using UuidCreate.
  */
-Status generate_uuid_win32(std::string* uuid_str) {
-  if (uuid_str == nullptr)
-    return Status_UtilsError("Null UUID string argument");
-
-  UUID uuid;
+void fill_random_bytes(BinaryUUID& uuid) {
+  UUID uuid_bytes;
   RPC_STATUS rc = UuidCreate(&uuid);
-  if (rc != RPC_S_OK)
+  if (rc != RPC_S_OK) {
     return Status_UtilsError("Unable to generate Win32 UUID: creation error");
+  }
 
-  char* buf = nullptr;
-  rc = UuidToStringA(&uuid, reinterpret_cast<RPC_CSTR*>(&buf));
-  if (rc != RPC_S_OK)
-    return Status_UtilsError(
-        "Unable to generate Win32 UUID: string conversion error");
-
-  *uuid_str = std::string(buf);
-
-  rc = RpcStringFreeA(reinterpret_cast<RPC_CSTR*>(&buf));
-  if (rc != RPC_S_OK)
-    return Status_UtilsError("Unable to generate Win32 UUID: free error");
-
-  return Status::Ok();
+  // Copy the bytes over manually so we don't have to fight with compiler
+  // struct packing semantics.
+  uuid[0] = static_cast<uint8_t>(uuid_bytes.Data1 >> 24 & 0xFF);
+  uuid[1] = static_cast<uint8_t>(uuid_bytes.Data1 >> 16 & 0xFF);
+  uuid[2] = static_cast<uint8_t>(uuid_bytes.Data1 >> 8 & 0xFF);
+  uuid[3] = static_cast<uint8_t>(uuid_bytes.Data1 & 0xFF);
+  uuid[4] = static_cast<uint8_t>(uuid_bytes.Data2 >> 8 & 0xFF);
+  uuid[5] = static_cast<uint8_t>(uuid_bytes.Data2 & 0xFF);
+  uuid[6] = static_cast<uint8_t>(uuid_bytes.Data3 >> 8 & 0xFF);
+  uuid[7] = static_cast<uint8_t>(uuid_bytes.Data3 & 0xFF);
+  for (size_t i = 0; i < 8; i++) {
+    uuid[8 + i] = static_cast<uint8_t>(uuid_bytes.Data4[i]);
+  }
 }
 
 #else
 
 /**
- * Generate a UUID using OpenSSL.
- *
- * Initially from: https://gist.github.com/kvelakur/9069c9896577c3040030
- * "Generating a Version 4 UUID using OpenSSL"
+ * Fill a buffer with random bytes using OpenSSL RAND_bytes.
  */
-Status generate_uuid_openssl(std::string* uuid_str) {
-  if (uuid_str == nullptr)
-    return Status_UtilsError("Null UUID string argument");
-
-  union {
-    struct {
-      uint32_t time_low;
-      uint16_t time_mid;
-      uint16_t time_hi_and_version;
-      uint8_t clk_seq_hi_res;
-      uint8_t clk_seq_low;
-      uint8_t node[6];
-    };
-    uint8_t __rnd[16];
-  } uuid;
-
-  int rc = RAND_bytes(uuid.__rnd, sizeof(uuid));
-  if (rc < 1) {
+void fill_random_bytes(BinaryUUID& uuid) {
+  if (RAND_bytes(uuid.data(), uuid.size()) != 1) {
     char err_msg[256];
     ERR_error_string_n(ERR_get_error(), err_msg, sizeof(err_msg));
-    return Status_UtilsError(
-        "Cannot generate random bytes with OpenSSL: " + std::string(err_msg));
+    throw UUIDException("Error generating UUID: " + std::string(err_msg));
   }
-
-  // Refer Section 4.2 of RFC-4122
-  // https://tools.ietf.org/html/rfc4122#section-4.2
-  uuid.clk_seq_hi_res = (uint8_t)((uuid.clk_seq_hi_res & 0x3F) | 0x80);
-  uuid.time_hi_and_version =
-      (uint16_t)((uuid.time_hi_and_version & 0x0FFF) | 0x4000);
-
-  // Format the UUID as a string.
-  char buf[128];
-  rc = snprintf(
-      buf,
-      sizeof(buf),
-      "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-      uuid.time_low,
-      uuid.time_mid,
-      uuid.time_hi_and_version,
-      uuid.clk_seq_hi_res,
-      uuid.clk_seq_low,
-      uuid.node[0],
-      uuid.node[1],
-      uuid.node[2],
-      uuid.node[3],
-      uuid.node[4],
-      uuid.node[5]);
-
-  if (rc < 0)
-    return Status_UtilsError("Error formatting UUID string");
-
-  *uuid_str = std::string(buf);
-
-  return Status::Ok();
 }
 
 #endif
-
-Status generate_uuid(std::string* uuid, bool hyphenate) {
-  if (uuid == nullptr)
-    return Status_UtilsError("Null UUID string argument");
-
-  std::string uuid_str;
-  {
-    // OpenSSL is not threadsafe, so grab a lock here. We are locking in the
-    // Windows case as well just to be careful.
-    std::unique_lock<std::mutex> lck(uuid_mtx);
-#ifdef _WIN32
-    RETURN_NOT_OK(generate_uuid_win32(&uuid_str));
-#else
-    RETURN_NOT_OK(generate_uuid_openssl(&uuid_str));
-#endif
-  }
-
-  uuid->clear();
-  for (unsigned i = 0; i < uuid_str.length(); i++) {
-    if (uuid_str[i] == '-' && !hyphenate)
-      continue;
-    uuid->push_back(uuid_str[i]);
-  }
-
-  return Status::Ok();
-}
 
 }  // namespace tiledb::sm::uuid

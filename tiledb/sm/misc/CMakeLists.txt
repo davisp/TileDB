@@ -76,7 +76,7 @@ conclude(object_library)
 #
 commence(object_library uuid)
     this_target_sources(uuid.cc)
-    this_target_object_libraries(baseline)
+    this_target_object_libraries(baseline time)
     if(WIN32)
         this_target_link_libraries(rpcrt4)
     else()

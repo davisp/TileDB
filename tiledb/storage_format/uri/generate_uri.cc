@@ -42,8 +42,7 @@ std::string generate_timestamped_name(
     uint64_t timestamp_start,
     uint64_t timestamp_end,
     std::optional<format_version_t> version) {
-  std::string uuid;
-  throw_if_not_ok(sm::uuid::generate_uuid(&uuid, false));
+  std::string uuid = sm::uuid::generate_uuid();
 
   if (timestamp_start > timestamp_end) {
     throw std::logic_error(

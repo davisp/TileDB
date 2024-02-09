@@ -42,15 +42,15 @@ namespace sm {
 namespace uuid {
 
 /**
- * Generates a 128-bit UUID. The string is formatted with hyphens like:
- * 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx' where 'x' is a hexadecimal digit.
- * Note: this function internally acquires a lock.
+ * Generate a UUIDv4.
  *
- * @param uuid Output parameter which will store the UUID in string format.
- * @param hyphenate If false, the UUID string will not be hyphenated.
- * @return Status
+ * The entropy for these UUIDs are provided by UuidCreate on Windows and
+ * OpenSSL's RAND_bytes on all other platforms.
+ *
+ * UUIDs generated in the same millisecond are guaranteed to sort in the order
+ * they were generated.
  */
-Status generate_uuid(std::string* uuid, bool hyphenate = true);
+std::string generate_uuid();
 
 }  // namespace uuid
 }  // namespace sm

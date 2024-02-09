@@ -29,6 +29,6 @@
 #include "../uuid.h"
 
 int main() {
-  (void)tiledb::sm::uuid::generate_uuid(nullptr, false);
+  tiledb::sm::uuid::generate_uuid();
   return 0;
 }
