@@ -204,12 +204,11 @@ void ASTNodeVal::rewrite_enumeration_conditions(
       } else {
         op_ = QueryConditionOp::ALWAYS_FALSE;
       }
-      data_ = ByteVecValue(val_size);
-      utils::safe_integral_cast_to_datatype(0, attr->type(), data_);
-    } else {
-      data_ = ByteVecValue(val_size);
-      utils::safe_integral_cast_to_datatype(idx, attr->type(), data_);
+      idx = 0;
     }
+
+    data_ = ByteVecValue(val_size);
+    utils::safe_integral_cast_to_datatype(idx, attr->type(), data_);
   } else {
     // Buffers and writers for the new data/offsets memory
     std::vector<uint8_t> data_buffer(val_size * members_.size());
