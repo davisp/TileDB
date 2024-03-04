@@ -149,32 +149,83 @@ TEST_CASE_METHOD(
   auto type = GENERATE(
       TestArrayType::DENSE, TestArrayType::SPARSE, TestArrayType::LEGACY);
   auto serialize = SERIALIZE_TESTS();
-  create_array(type, serialize);
 
-  std::vector<float> values = {2.0f, 4.0f};
-  auto qc =
-      QueryConditionExperimental::create(ctx_, "attr1", values, TILEDB_IN);
+  try {
+    create_array(type, serialize);
+  } catch (...) {
+    std::cerr << "XKCD: CREATE ARRAY" << std::endl;
+    throw;
+  }
 
-  check_read(
-      qc, [](const QCSetsCell& c) { return (c.a1 == 2.0f || c.a1 == 4.0f); });
+  try {
+    std::vector<float> values = {2.0f, 4.0f};
+    auto qc =
+        QueryConditionExperimental::create(ctx_, "attr1", values, TILEDB_IN);
+
+    try {
+      check_read(qc, [](const QCSetsCell& c) {
+        return (c.a1 == 2.0f || c.a1 == 4.0f);
+      });
+    } catch (...) {
+      std::cerr << "XKCD: CHECK READ!" << std::endl;
+      throw;
+    }
+  } catch (...) {
+    std::cerr << "XKCD: CREATE QC AND CHECK READ" << std::endl;
+    throw;
+  }
 }
+
+// TEST_CASE_METHOD(
+//     CPPQueryConditionFx,
+//     "IN - String",
+//     "[query-condition][set][basic][string]") {
+//   auto type = GENERATE(
+//       TestArrayType::DENSE, TestArrayType::SPARSE, TestArrayType::LEGACY);
+//   auto serialize = SERIALIZE_TESTS();
+//   create_array(type, serialize);
+//
+//   std::vector<std::string> values = {"barney", "wilma"};
+//   auto qc =
+//       QueryConditionExperimental::create(ctx_, "attr2", values, TILEDB_IN);
+//
+//   check_read(qc, [](const QCSetsCell& c) {
+//     return (c.a2 == "barney" || c.a2 == "wilma");
+//   });
+// }
 
 TEST_CASE_METHOD(
     CPPQueryConditionFx,
-    "IN - String",
-    "[query-condition][set][basic][string]") {
+    "IN - STRING 2",
+    "[query-condition][set][basic][float]") {
   auto type = GENERATE(
       TestArrayType::DENSE, TestArrayType::SPARSE, TestArrayType::LEGACY);
   auto serialize = SERIALIZE_TESTS();
-  create_array(type, serialize);
 
-  std::vector<std::string> values = {"barney", "wilma"};
-  auto qc =
-      QueryConditionExperimental::create(ctx_, "attr2", values, TILEDB_IN);
+  try {
+    create_array(type, serialize);
+  } catch (...) {
+    std::cerr << "XKCD: CREATE ARRAY" << std::endl;
+    throw;
+  }
 
-  check_read(qc, [](const QCSetsCell& c) {
-    return (c.a2 == "barney" || c.a2 == "wilma");
-  });
+  try {
+    std::vector<std::string> values = {"barney", "wilma"};
+    auto qc =
+        QueryConditionExperimental::create(ctx_, "attr2", values, TILEDB_IN);
+
+    try {
+      check_read(qc, [](const QCSetsCell& c) {
+        return (c.a2 == "barney" || c.a2 == "wilma");
+      });
+    } catch (...) {
+      std::cerr << "XKCD: CHECK READ!" << std::endl;
+      throw;
+    }
+  } catch (...) {
+    std::cerr << "XKCD: CREATE QC AND CHECK READ" << std::endl;
+    throw;
+  }
 }
 
 TEST_CASE_METHOD(
@@ -595,7 +646,12 @@ void CPPQueryConditionFx::create_array(TestArrayType type, bool serialize) {
   type_ = type;
   serialize_ = serialize;
 
-  generate_data();
+  try {
+    generate_data();
+  } catch (...) {
+    std::cerr << "XKCD: GENERATE DATA" << std::endl;
+    throw;
+  }
 
   tiledb_array_type_t array_type = TILEDB_SPARSE;
   if (type_ == TestArrayType::DENSE) {
@@ -663,25 +719,35 @@ void CPPQueryConditionFx::create_array(TestArrayType type, bool serialize) {
     query.set_data_buffer("dim", dim_values_);
   }
 
-  auto [attr2_data, attr2_offsets] = to_buffers(attr2_values_);
-  auto [attr3_data, attr3_offsets] = to_buffers(attr3_values_);
-  auto [attr4_data, attr4_offsets] = to_buffers(attr4_values_);
-  auto attr5_data = to_fixed_buffer(attr5_values_);
+  try {
+    auto [attr2_data, attr2_offsets] = to_buffers(attr2_values_);
+    auto [attr3_data, attr3_offsets] = to_buffers(attr3_values_);
+    auto [attr4_data, attr4_offsets] = to_buffers(attr4_values_);
+    auto attr5_data = to_fixed_buffer(attr5_values_);
 
-  query.set_data_buffer("attr1", attr1_values_)
-      .set_data_buffer("attr2", attr2_data)
-      .set_offsets_buffer("attr2", attr2_offsets)
-      .set_data_buffer("attr3", attr3_data)
-      .set_offsets_buffer("attr3", attr3_offsets)
-      .set_validity_buffer("attr3", attr3_validity_)
-      .set_data_buffer("attr4", attr4_data)
-      .set_offsets_buffer("attr4", attr4_offsets)
-      .set_data_buffer("attr5", attr5_data)
-      .set_data_buffer("attr6", attr6_values_);
+    query.set_data_buffer("attr1", attr1_values_)
+        .set_data_buffer("attr2", attr2_data)
+        .set_offsets_buffer("attr2", attr2_offsets)
+        .set_data_buffer("attr3", attr3_data)
+        .set_offsets_buffer("attr3", attr3_offsets)
+        .set_validity_buffer("attr3", attr3_validity_)
+        .set_data_buffer("attr4", attr4_data)
+        .set_offsets_buffer("attr4", attr4_offsets)
+        .set_data_buffer("attr5", attr5_data)
+        .set_data_buffer("attr6", attr6_values_);
 
-  CHECK_NOTHROW(query.submit());
-  query.finalize();
-  array.close();
+    try {
+      CHECK_NOTHROW(query.submit());
+      query.finalize();
+      array.close();
+    } catch (...) {
+      std::cerr << "XKCD: CREATE ARRAY WRITE QUERY" << std::endl;
+      throw;
+    }
+  } catch (...) {
+    std::cerr << "XKCD: CREATE ARRAY CONVERT BUFFS AND QUERY" << std::endl;
+    throw;
+  }
 }
 
 void CPPQueryConditionFx::write_delete(QueryCondition& qc) {
@@ -706,118 +772,131 @@ void CPPQueryConditionFx::check_read(
     query.set_layout(TILEDB_GLOBAL_ORDER);
   }
 
-  std::vector<int> dim_read(num_elements_);
-  std::vector<float> attr1_read(num_elements_);
-  std::vector<char> attr2_read(num_elements_ * 10);
-  std::vector<uint64_t> attr2_read_offsets(num_elements_);
-  std::vector<char> attr3_read(num_elements_ * 10);
-  std::vector<uint64_t> attr3_read_offsets(num_elements_);
-  std::vector<uint8_t> attr3_read_validity(num_elements_);
-  std::vector<char> attr4_read(num_elements_ * 10);
-  std::vector<uint64_t> attr4_read_offsets(num_elements_);
-  std::vector<char> attr5_read(num_elements_ * 4);
-  std::vector<int> attr6_read(num_elements_);
+  try {
+    std::cerr << "XKCD: CHECK READ BUFFER CREATION" << std::endl;
 
-  if (serialize_) {
-    qc = serialize_deserialize_qc(qc);
-  }
+    std::vector<int> dim_read(num_elements_);
+    std::vector<float> attr1_read(num_elements_);
+    std::vector<char> attr2_read(num_elements_ * 10);
+    std::vector<uint64_t> attr2_read_offsets(num_elements_);
+    std::vector<char> attr3_read(num_elements_ * 10);
+    std::vector<uint64_t> attr3_read_offsets(num_elements_);
+    std::vector<uint8_t> attr3_read_validity(num_elements_);
+    std::vector<char> attr4_read(num_elements_ * 10);
+    std::vector<uint64_t> attr4_read_offsets(num_elements_);
+    std::vector<char> attr5_read(num_elements_ * 4);
+    std::vector<int> attr6_read(num_elements_);
 
-  auto core_array = array.ptr().get()->array_;
-  auto core_qc = qc.ptr().get()->query_condition_;
-  throw_if_not_ok(core_qc->check(core_array->array_schema_latest()));
-
-  query.set_condition(qc)
-      .set_data_buffer("dim", dim_read)
-      .set_data_buffer("attr1", attr1_read)
-      .set_data_buffer("attr2", attr2_read)
-      .set_offsets_buffer("attr2", attr2_read_offsets)
-      .set_data_buffer("attr3", attr3_read)
-      .set_offsets_buffer("attr3", attr3_read_offsets)
-      .set_validity_buffer("attr3", attr3_read_validity)
-      .set_data_buffer("attr4", attr4_read)
-      .set_offsets_buffer("attr4", attr4_read_offsets)
-      .set_data_buffer("attr5", attr5_read)
-      .set_data_buffer("attr6", attr6_read);
-
-  REQUIRE(query.submit() == Query::Status::COMPLETE);
-
-  auto table = query.result_buffer_elements();
-  dim_read.resize(table["dim"].second);
-  attr1_read.resize(table["attr1"].second);
-  attr2_read_offsets.resize(table["attr2"].first);
-  attr3_read_offsets.resize(table["attr3"].first);
-  attr3_read_validity.resize(table["attr3"].first);
-  attr4_read_offsets.resize(table["attr4"].first);
-  attr5_read.resize(table["attr5"].second);
-  attr6_read.resize(table["attr6"].second);
-
-  auto attr2_strings =
-      to_vector(table["attr2"].second, attr2_read, attr2_read_offsets);
-  auto attr3_strings = to_vector(
-      table["attr3"].second,
-      attr3_read,
-      attr3_read_offsets,
-      attr3_read_validity);
-  auto attr4_strings =
-      to_vector(table["attr4"].second, attr4_read, attr4_read_offsets);
-  auto attr5_strings = to_vector(attr5_read, 4);
-
-  std::vector<int> dim_expected;
-  std::vector<float> attr1_expected;
-  std::vector<std::string> attr2_expected;
-  std::vector<std::string> attr3_expected;
-  std::vector<std::string> attr4_expected;
-  std::vector<std::string> attr5_expected;
-  std::vector<int> attr6_expected;
-
-  select_data(
-      func,
-      dim_expected,
-      attr1_expected,
-      attr2_expected,
-      attr3_expected,
-      attr4_expected,
-      attr5_expected,
-      attr6_expected);
-
-  REQUIRE(dim_read.size() == dim_expected.size());
-  for (size_t i = 0; i < dim_expected.size(); i++) {
-    REQUIRE(dim_read[i] == dim_expected[i]);
-  }
-
-  REQUIRE(attr1_read.size() == attr1_expected.size());
-  for (size_t i = 0; i < attr1_expected.size(); i++) {
-    // NaN != NaN, so we have to use isnan to check both
-    if (std::isnan(attr1_expected[i])) {
-      REQUIRE(std::isnan(attr1_read[i]));
-    } else {
-      REQUIRE(attr1_read[i] == attr1_expected[i]);
+    std::cerr << "XKCD: SERIALIZATION ROUNDTRIP" << std::endl;
+    if (serialize_) {
+      qc = serialize_deserialize_qc(qc);
     }
-  }
 
-  REQUIRE(attr2_strings.size() == attr2_expected.size());
-  for (size_t i = 0; i < attr2_expected.size(); i++) {
-    REQUIRE(attr2_strings[i] == attr2_expected[i]);
-  }
+    auto core_array = array.ptr().get()->array_;
+    auto core_qc = qc.ptr().get()->query_condition_;
+    throw_if_not_ok(core_qc->check(core_array->array_schema_latest()));
 
-  REQUIRE(attr3_strings.size() == attr3_expected.size());
-  for (size_t i = 0; i < attr3_expected.size(); i++) {
-    REQUIRE(attr3_strings[i] == attr3_expected[i]);
-  }
+    std::cerr << "XKCD: Setting ready query buffers" << std::endl;
+    query.set_condition(qc)
+        .set_data_buffer("dim", dim_read)
+        .set_data_buffer("attr1", attr1_read)
+        .set_data_buffer("attr2", attr2_read)
+        .set_offsets_buffer("attr2", attr2_read_offsets)
+        .set_data_buffer("attr3", attr3_read)
+        .set_offsets_buffer("attr3", attr3_read_offsets)
+        .set_validity_buffer("attr3", attr3_read_validity)
+        .set_data_buffer("attr4", attr4_read)
+        .set_offsets_buffer("attr4", attr4_read_offsets)
+        .set_data_buffer("attr5", attr5_read)
+        .set_data_buffer("attr6", attr6_read);
 
-  REQUIRE(attr4_strings.size() == attr4_expected.size());
-  for (size_t i = 0; i < attr4_expected.size(); i++) {
-    REQUIRE(attr4_strings[i] == attr4_expected[i]);
-  }
+    REQUIRE(query.submit() == Query::Status::COMPLETE);
 
-  REQUIRE(attr5_strings.size() == attr5_expected.size());
-  for (size_t i = 0; i < attr5_expected.size(); i++) {
-    REQUIRE(attr5_strings[i] == attr5_expected[i]);
-  }
+    auto table = query.result_buffer_elements();
+    dim_read.resize(table["dim"].second);
+    attr1_read.resize(table["attr1"].second);
+    attr2_read_offsets.resize(table["attr2"].first);
+    attr3_read_offsets.resize(table["attr3"].first);
+    attr3_read_validity.resize(table["attr3"].first);
+    attr4_read_offsets.resize(table["attr4"].first);
+    attr5_read.resize(table["attr5"].second);
+    attr6_read.resize(table["attr6"].second);
 
-  REQUIRE(attr6_read.size() == attr6_expected.size());
-  for (size_t i = 0; i < attr6_expected.size(); i++) {
-    REQUIRE(attr6_read[i] == attr6_expected[i]);
+    std::cerr << "XKCD: CONVERTING BACK TO DATA" << std::endl;
+    auto attr2_strings =
+        to_vector(table["attr2"].second, attr2_read, attr2_read_offsets);
+    auto attr3_strings = to_vector(
+        table["attr3"].second,
+        attr3_read,
+        attr3_read_offsets,
+        attr3_read_validity);
+    auto attr4_strings =
+        to_vector(table["attr4"].second, attr4_read, attr4_read_offsets);
+    auto attr5_strings = to_vector(attr5_read, 4);
+
+    std::vector<int> dim_expected;
+    std::vector<float> attr1_expected;
+    std::vector<std::string> attr2_expected;
+    std::vector<std::string> attr3_expected;
+    std::vector<std::string> attr4_expected;
+    std::vector<std::string> attr5_expected;
+    std::vector<int> attr6_expected;
+
+    std::cerr << "XKCD: SELECTING DATA" << std::endl;
+    select_data(
+        func,
+        dim_expected,
+        attr1_expected,
+        attr2_expected,
+        attr3_expected,
+        attr4_expected,
+        attr5_expected,
+        attr6_expected);
+
+    std::cerr << "XKCD: PERFORMING ASSERTIONS." << std::endl;
+
+    REQUIRE(dim_read.size() == dim_expected.size());
+    for (size_t i = 0; i < dim_expected.size(); i++) {
+      REQUIRE(dim_read[i] == dim_expected[i]);
+    }
+
+    REQUIRE(attr1_read.size() == attr1_expected.size());
+    for (size_t i = 0; i < attr1_expected.size(); i++) {
+      // NaN != NaN, so we have to use isnan to check both
+      if (std::isnan(attr1_expected[i])) {
+        REQUIRE(std::isnan(attr1_read[i]));
+      } else {
+        REQUIRE(attr1_read[i] == attr1_expected[i]);
+      }
+    }
+
+    REQUIRE(attr2_strings.size() == attr2_expected.size());
+    for (size_t i = 0; i < attr2_expected.size(); i++) {
+      REQUIRE(attr2_strings[i] == attr2_expected[i]);
+    }
+
+    REQUIRE(attr3_strings.size() == attr3_expected.size());
+    for (size_t i = 0; i < attr3_expected.size(); i++) {
+      REQUIRE(attr3_strings[i] == attr3_expected[i]);
+    }
+
+    REQUIRE(attr4_strings.size() == attr4_expected.size());
+    for (size_t i = 0; i < attr4_expected.size(); i++) {
+      REQUIRE(attr4_strings[i] == attr4_expected[i]);
+    }
+
+    REQUIRE(attr5_strings.size() == attr5_expected.size());
+    for (size_t i = 0; i < attr5_expected.size(); i++) {
+      REQUIRE(attr5_strings[i] == attr5_expected[i]);
+    }
+
+    REQUIRE(attr6_read.size() == attr6_expected.size());
+    for (size_t i = 0; i < attr6_expected.size(); i++) {
+      REQUIRE(attr6_read[i] == attr6_expected[i]);
+    }
+  } catch (...) {
+    std::cerr << "XKCD: MAIN READ CHECK" << std::endl;
+    throw;
   }
 }
 
