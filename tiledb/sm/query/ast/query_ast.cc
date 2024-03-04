@@ -219,25 +219,29 @@ void ASTNodeVal::rewrite_enumeration_conditions(
 
     ByteVecValue curr_data(val_size);
     uint64_t curr_offset = 0;
+    uint64_t num_offsets = 0;
 
     for (auto& member : members_) {
       auto idx = enumeration->index_of(member.data(), member.size());
       if (idx == constants::enumeration_missing_value) {
-        throw std::invalid_argument(
-            "Enumeration value not found for field '" + attr->name() + "'");
+        continue;
       }
 
       utils::safe_integral_cast_to_datatype(idx, attr->type(), curr_data);
       data_writer.write(curr_data.data(), curr_data.size());
       offsets_writer.write(curr_offset);
       curr_offset += val_size;
+      num_offsets += 1;
     }
 
-    data_ = ByteVecValue(data_buffer.size());
-    std::memcpy(data_.data(), data_buffer.data(), data_buffer.size());
+    auto total_data_size = curr_offset;
+    auto total_offsets_size = num_offsets * constants::cell_var_offset_size;
 
-    offsets_ = ByteVecValue(offsets_buffer.size());
-    std::memcpy(offsets_.data(), offsets_buffer.data(), offsets_buffer.size());
+    data_ = ByteVecValue(total_data_size);
+    std::memcpy(data_.data(), data_buffer.data(), total_data_size);
+
+    offsets_ = ByteVecValue(total_offsets_size);
+    std::memcpy(offsets_.data(), offsets_buffer.data(), total_offsets_size);
 
     generate_members();
   }
