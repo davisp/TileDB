@@ -1012,7 +1012,7 @@ std::vector<std::string> CPPQueryConditionFx::to_vector(
 template <typename T>
 T CPPQueryConditionFx::choose_value(std::vector<T>& values) {
   auto rval = random();
-  auto idx = static_cast<size_t>(rval * values.size());
+  auto idx = static_cast<size_t>(rval * values.size()) % values.size();
   return values[idx];
 }
 
