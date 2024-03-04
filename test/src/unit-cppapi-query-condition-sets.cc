@@ -828,7 +828,7 @@ void CPPQueryConditionFx::rm_array() {
 }
 
 void CPPQueryConditionFx::generate_data() {
-  num_elements_ = 10;  // * 1024;
+  num_elements_ = 1024;
 
   dim_values_.clear();
   attr1_values_.clear();
