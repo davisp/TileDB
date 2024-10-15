@@ -2490,11 +2490,11 @@ CAPI_INTERFACE_WITH_RETURN_TYPE(uint32_t, max_path) {
   return tiledb::sm::constants::path_max_len;
 }
 
-CAPI_INTERFACE_WITH_RETURN_TYPE(uint64_t, tiledb_offset_size) {
+CAPI_INTERFACE_WITH_RETURN_TYPE(uint64_t, offset_size) {
   return tiledb::sm::constants::cell_var_offset_size;
 }
 
-CAPI_INTERFACE_WITH_RETURN_TYPE(uint64_t, tiledb_timestamp_now_ms) {
+CAPI_INTERFACE_WITH_RETURN_TYPE(uint64_t, timestamp_now_ms) {
   /*
    * The existing implementation function is not marked `nothrow`. The
    * signature of this function cannot signal an error. Hence we normalize any
@@ -2508,7 +2508,7 @@ CAPI_INTERFACE_WITH_RETURN_TYPE(uint64_t, tiledb_timestamp_now_ms) {
   }
 }
 
-CAPI_INTERFACE_WITH_RETURN_TYPE(const char*, tiledb_timestamps) {
+CAPI_INTERFACE_WITH_RETURN_TYPE(const char*, timestamps) {
   return tiledb::sm::constants::timestamps.c_str();
 }
 
@@ -2516,8 +2516,7 @@ CAPI_INTERFACE_WITH_RETURN_TYPE(const char*, tiledb_timestamps) {
 /*            VERSION             */
 /* ****************************** */
 
-CAPI_INTERFACE_VOID(
-    tiledb_version, int32_t* major, int32_t* minor, int32_t* rev) {
+CAPI_INTERFACE_VOID(version, int32_t* major, int32_t* minor, int32_t* rev) {
   *major = tiledb::sm::constants::library_version[0];
   *minor = tiledb::sm::constants::library_version[1];
   *rev = tiledb::sm::constants::library_version[2];
