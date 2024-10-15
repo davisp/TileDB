@@ -50,6 +50,14 @@ CAPI_PREFIX(root)                 \
 capi_return_t tiledb_##root(__VA_ARGS__) noexcept
 
 /*
+ * Declaration clause for a C API interface function with a specified return
+ * type. Follow with a `{ ... }` block defining the body.
+ */
+#define CAPI_INTERFACE_WITH_RETURN_TYPE(rtype, root, ...) \
+CAPI_PREFIX(root)                 \
+rtype tiledb_##root(__VA_ARGS__) noexcept
+
+/*
  * A variant of CAPI_INTERFACE for the handful of `void` returns.
  */
 #define CAPI_INTERFACE_VOID(root, ...) \

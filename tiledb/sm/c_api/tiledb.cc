@@ -2482,19 +2482,19 @@ CAPI_INTERFACE(
 /*            CONSTANTS           */
 /* ****************************** */
 
-uint32_t tiledb_var_num() noexcept {
+CAPI_INTERFACE_WITH_RETURN_TYPE(uint32_t, var_num) {
   return tiledb::sm::constants::var_num;
 }
 
-uint32_t tiledb_max_path() noexcept {
+CAPI_INTERFACE_WITH_RETURN_TYPE(uint32_t, max_path) {
   return tiledb::sm::constants::path_max_len;
 }
 
-uint64_t tiledb_offset_size() noexcept {
+CAPI_INTERFACE_WITH_RETURN_TYPE(uint64_t, tiledb_offset_size) {
   return tiledb::sm::constants::cell_var_offset_size;
 }
 
-uint64_t tiledb_timestamp_now_ms() noexcept {
+CAPI_INTERFACE_WITH_RETURN_TYPE(uint64_t, tiledb_timestamp_now_ms) {
   /*
    * The existing implementation function is not marked `nothrow`. The
    * signature of this function cannot signal an error. Hence we normalize any
@@ -2508,7 +2508,7 @@ uint64_t tiledb_timestamp_now_ms() noexcept {
   }
 }
 
-const char* tiledb_timestamps() noexcept {
+CAPI_INTERFACE_WITH_RETURN_TYPE(const char*, tiledb_timestamps) {
   return tiledb::sm::constants::timestamps.c_str();
 }
 
@@ -2612,11 +2612,12 @@ CAPI_INTERFACE(
       ctx, array_schema_evolution, expanded_domain);
 }
 
-TILEDB_EXPORT int32_t tiledb_array_schema_evolution_set_timestamp_range(
+CAPI_INTERFACE(
+    tiledb_array_schema_evolution_set_timestamp_range,
     tiledb_ctx_t* ctx,
     tiledb_array_schema_evolution_t* array_schema_evolution,
     uint64_t lo,
-    uint64_t hi) noexcept {
+    uint64_t hi) {
   return api_entry<
       tiledb::api::tiledb_array_schema_evolution_set_timestamp_range>(
       ctx, array_schema_evolution, lo, hi);
