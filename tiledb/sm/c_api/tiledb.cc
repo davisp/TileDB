@@ -2516,7 +2516,8 @@ CAPI_INTERFACE_WITH_RETURN_TYPE(const char*, tiledb_timestamps) {
 /*            VERSION             */
 /* ****************************** */
 
-void tiledb_version(int32_t* major, int32_t* minor, int32_t* rev) noexcept {
+CAPI_INTERFACE_VOID(
+    tiledb_version, int32_t* major, int32_t* minor, int32_t* rev) {
   *major = tiledb::sm::constants::library_version[0];
   *minor = tiledb::sm::constants::library_version[1];
   *rev = tiledb::sm::constants::library_version[2];
