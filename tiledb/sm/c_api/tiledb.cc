@@ -2613,7 +2613,7 @@ CAPI_INTERFACE(
 }
 
 CAPI_INTERFACE(
-    tiledb_array_schema_evolution_set_timestamp_range,
+    array_schema_evolution_set_timestamp_range,
     tiledb_ctx_t* ctx,
     tiledb_array_schema_evolution_t* array_schema_evolution,
     uint64_t lo,
