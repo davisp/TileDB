@@ -67,6 +67,6 @@ CAPI_INTERFACE(
 }
 
 CAPI_INTERFACE_WITH_RETURN_TYPE(
-    uint64_t, tiledb_datatype_size, tiledb_datatype_t type) {
+    uint64_t, datatype_size, tiledb_datatype_t type) {
   return tiledb::sm::datatype_size(static_cast<tiledb::sm::Datatype>(type));
 }

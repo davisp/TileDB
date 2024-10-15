@@ -116,7 +116,7 @@ typedef int32_t capi_status_t;
  * @param x A status code returned from a C API call
  */
 #ifdef __cplusplus
-inline capi_status_t tiledb_status(capi_return_t x) {
+inline capi_status_t tiledb_status(capi_return_t x) noexcept {
   return x;
 }
 #endif
@@ -130,7 +130,7 @@ inline capi_status_t tiledb_status(capi_return_t x) {
  * @param x A value returned from a CAPI call
  * @return The status code within that value
  */
-TILEDB_EXPORT capi_status_t tiledb_status_code(capi_return_t x);
+TILEDB_EXPORT capi_status_t tiledb_status_code(capi_return_t x) noexcept;
 
 /**
  * @name Status codes

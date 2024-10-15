@@ -101,7 +101,7 @@
 /*
  * The Definition for a "C" function can't be in a header.
  */
-capi_status_t tiledb_status_code(capi_return_t x) {
+CAPI_INTERFACE(status_code, capi_return_t x) {
   return tiledb_status(x);  // An inline C++ function
 }
 
