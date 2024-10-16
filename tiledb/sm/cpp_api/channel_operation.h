@@ -122,7 +122,7 @@ class ChannelOperation {
 class CountOperation : public ChannelOperation {
  private:
   virtual const tiledb_channel_operation_t* ptr() const {
-    return tiledb_aggregate_count;
+    return tiledb_aggregate_count_ptr();
   }
 };
 

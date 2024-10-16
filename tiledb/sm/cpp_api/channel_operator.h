@@ -48,7 +48,7 @@ class SumOperator : public ChannelOperator {
   /*                API                */
   /* ********************************* */
   static const tiledb_channel_operator_t* ptr() {
-    return tiledb_channel_operator_sum;
+    return tiledb_channel_operator_sum_ptr();
   }
 };
 
@@ -58,7 +58,7 @@ class MinOperator : public ChannelOperator {
   /*                API                */
   /* ********************************* */
   static const tiledb_channel_operator_t* ptr() {
-    return tiledb_channel_operator_min;
+    return tiledb_channel_operator_min_ptr();
   }
 };
 
@@ -68,7 +68,7 @@ class MaxOperator : public ChannelOperator {
   /*                API                */
   /* ********************************* */
   static const tiledb_channel_operator_t* ptr() {
-    return tiledb_channel_operator_max;
+    return tiledb_channel_operator_max_ptr();
   }
 };
 
@@ -78,7 +78,7 @@ class MeanOperator : public ChannelOperator {
   /*                API                */
   /* ********************************* */
   static const tiledb_channel_operator_t* ptr() {
-    return tiledb_channel_operator_mean;
+    return tiledb_channel_operator_mean_ptr();
   }
 };
 
@@ -88,7 +88,7 @@ class NullCountOperator : public ChannelOperator {
   /*                API                */
   /* ********************************* */
   static const tiledb_channel_operator_t* ptr() {
-    return tiledb_channel_operator_null_count;
+    return tiledb_channel_operator_null_count_ptr();
   }
 };
 

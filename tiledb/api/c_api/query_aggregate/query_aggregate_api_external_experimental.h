@@ -49,24 +49,21 @@ typedef struct tiledb_channel_operation_handle_t tiledb_channel_operation_t;
 
 typedef struct tiledb_channel_operator_handle_t tiledb_channel_operator_t;
 
-// Constant aggregate operator handles
-TILEDB_EXPORT extern const tiledb_channel_operator_t*
-    tiledb_channel_operator_sum;
-
-TILEDB_EXPORT extern const tiledb_channel_operator_t*
-    tiledb_channel_operator_min;
-
-TILEDB_EXPORT extern const tiledb_channel_operator_t*
-    tiledb_channel_operator_max;
-
-TILEDB_EXPORT extern const tiledb_channel_operator_t*
-    tiledb_channel_operator_mean;
-
-TILEDB_EXPORT extern const tiledb_channel_operator_t*
-    tiledb_channel_operator_null_count;
-
-// Constant aggregate operation handles
-TILEDB_EXPORT extern const tiledb_channel_operation_t* tiledb_aggregate_count;
+/**
+ * Helper function to access the constant SUM channel operator handle
+ * **Example:**
+ *
+ * @code{.c}
+ * const tiledb_channel_operator_t* operator_sum =
+ *      tiledb_channel_operator_sum_ptr();
+ * tiledb_channel_operation_t* sum_A;
+ * tiledb_create_unary_aggregate(ctx, query, operator_sum, "A", sum_A);
+ * @endcode
+ *
+ * @return The channel operator pointeer.
+ */
+TILEDB_EXPORT const tiledb_channel_operator_t* tiledb_channel_operator_sum_ptr()
+    TILEDB_NOEXCEPT;
 
 /**
  * Helper function to access the constant SUM channel operator handle
@@ -91,6 +88,22 @@ TILEDB_EXPORT int32_t tiledb_channel_operator_sum_get(
  * **Example:**
  *
  * @code{.c}
+ * const tiledb_channel_operator_t* operator_min =
+ *      tiledb_channel_operator_min_ptr();
+ * tiledb_channel_operation_t* min_A;
+ * tiledb_create_unary_aggregate(ctx, query, operator_min, "A", min_A);
+ * @endcode
+ *
+ * @return The channel operator pointeer.
+ */
+TILEDB_EXPORT const tiledb_channel_operator_t* tiledb_channel_operator_min_ptr()
+    TILEDB_NOEXCEPT;
+
+/**
+ * Helper function to access the constant MIN channel operator handle
+ * **Example:**
+ *
+ * @code{.c}
  * const tiledb_channel_operator_t *operator_min;
  * tiledb_channel_operator_min_get(ctx, &operator_min);
  * tiledb_channel_operation_t* min_A;
@@ -109,6 +122,22 @@ TILEDB_EXPORT int32_t tiledb_channel_operator_min_get(
  * **Example:**
  *
  * @code{.c}
+ * const tiledb_channel_operator_t* operator_max =
+ *      tiledb_channel_operator_max_ptr();
+ * tiledb_channel_operation_t* max_A;
+ * tiledb_create_unary_aggregate(ctx, query, operator_max, "A", max_A);
+ * @endcode
+ *
+ * @return The channel operator pointeer.
+ */
+TILEDB_EXPORT const tiledb_channel_operator_t* tiledb_channel_operator_max_ptr()
+    TILEDB_NOEXCEPT;
+
+/**
+ * Helper function to access the constant MAX channel operator handle
+ * **Example:**
+ *
+ * @code{.c}
  * const tiledb_channel_operator_t *operator_max;
  * tiledb_channel_operator_max_get(ctx, &operator_max);
  * tiledb_channel_operation_t* max_A;
@@ -121,6 +150,20 @@ TILEDB_EXPORT int32_t tiledb_channel_operator_min_get(
  */
 TILEDB_EXPORT int32_t tiledb_channel_operator_max_get(
     tiledb_ctx_t* ctx, const tiledb_channel_operator_t** op) TILEDB_NOEXCEPT;
+
+/**
+ * Helper function to access the constant COUNT aggregate operation handle
+ * **Example:**
+ *
+ * @code{.c}
+ * const tiledb_channel_operation_t* operator_agg =
+ *      tiledb_aggregate_count_ptr();
+ * @endcode
+ *
+ * @return The channel operator pointeer.
+ */
+TILEDB_EXPORT const tiledb_channel_operation_t* tiledb_aggregate_count_ptr()
+    TILEDB_NOEXCEPT;
 
 /**
  * Helper function to acces the constant COUNT aggregate operation handle
@@ -144,6 +187,22 @@ TILEDB_EXPORT int32_t tiledb_aggregate_count_get(
  * **Example:**
  *
  * @code{.c}
+ * const tiledb_channel_operator_t* operator_mean =
+ *      tiledb_channel_operator_mean_ptr();
+ * tiledb_channel_operation_t* mean_A;
+ * tiledb_create_unary_aggregate(ctx, query, operator_mean, "A", mean_A);
+ * @endcode
+ *
+ * @return The channel operator pointeer.
+ */
+TILEDB_EXPORT const tiledb_channel_operator_t*
+tiledb_channel_operator_mean_ptr() TILEDB_NOEXCEPT;
+
+/**
+ * Helper function to access the constant MEAN channel operator handle
+ * **Example:**
+ *
+ * @code{.c}
  * const tiledb_channel_operator_t *operator_mean;
  * tiledb_channel_operator_mean_get(ctx, &operator_mean);
  * tiledb_channel_operation_t* mean_A;
@@ -156,6 +215,22 @@ TILEDB_EXPORT int32_t tiledb_aggregate_count_get(
  */
 TILEDB_EXPORT int32_t tiledb_channel_operator_mean_get(
     tiledb_ctx_t* ctx, const tiledb_channel_operator_t** op) TILEDB_NOEXCEPT;
+
+/**
+ * Helper function to access the constant NULL COUNT channel operator handle
+ * **Example:**
+ *
+ * @code{.c}
+ * const tiledb_channel_operator_t* operator_nc =
+ *      tiledb_channel_operator_nc_ptr();
+ * tiledb_channel_operation_t* nc_A;
+ * tiledb_create_unary_aggregate(ctx, query, operator_nc, "A", nc_A);
+ * @endcode
+ *
+ * @return The channel operator pointeer.
+ */
+TILEDB_EXPORT const tiledb_channel_operator_t*
+tiledb_channel_operator_null_count_ptr() TILEDB_NOEXCEPT;
 
 /**
  * Helper function to access the constant NULL_COUNT channel operator handle
