@@ -130,7 +130,7 @@ inline capi_status_t tiledb_status(capi_return_t x) noexcept {
  * @param x A value returned from a CAPI call
  * @return The status code within that value
  */
-TILEDB_EXPORT capi_status_t tiledb_status_code(capi_return_t x) noexcept;
+TILEDB_EXPORT capi_status_t tiledb_status_code(capi_return_t x) TILEDB_NOEXCEPT;
 
 /**
  * @name Status codes
