@@ -31,29 +31,12 @@
  * This file defines a timestamp function
  */
 
-#include "tdb_time.h"
-#ifdef _WIN32
-#include <sys/timeb.h>
-#include <sys/types.h>
-#else
-#include <sys/time.h>
-#endif
-#include <cstring>
+#include "tiledb/oxidize.h"
 
 namespace tiledb::sm::utils::time {
 
 uint64_t timestamp_now_ms() {
-#ifdef _WIN32
-  struct __timeb64 tb;
-  memset(&tb, 0, sizeof(tb));
-  _ftime64_s(&tb);
-  return static_cast<uint64_t>(tb.time * 1000L + tb.millitm);
-#else
-  struct timeval tp;
-  memset(&tp, 0, sizeof(struct timeval));
-  gettimeofday(&tp, nullptr);
-  return static_cast<uint64_t>(tp.tv_sec * 1000L + tp.tv_usec / 1000);
-#endif
+  return tiledb::rs::timestamp_now_ms();
 }
 
 }  // namespace tiledb::sm::utils::time

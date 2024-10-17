@@ -40,6 +40,8 @@ namespace tiledb::rs {
 std::string get_mime(void* data, uint64_t size);
 std::string get_mime_encoding(void* data, uint64_t size);
 
+uint64_t timestamp_now_ms();
+
 }  // namespace tiledb::rs
 
 #endif  // TILEDB_OXIDIZE_H

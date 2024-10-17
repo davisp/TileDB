@@ -11,6 +11,7 @@ uint32_t tiledb_rs_get_mime(
     void* data, uint64_t size, char* buffer, uint64_t buffer_len);
 uint32_t tiledb_rs_get_mime_encoding(
     void* data, uint64_t size, char* buffer, uint64_t buffer_len);
+uint64_t tiledb_rs_timestamp_now_ms();
 }
 
 namespace tiledb::rs {
@@ -35,6 +36,10 @@ std::string get_mime_encoding(void* data, uint64_t size) {
   // Defensively ensure the buffer is zero terminated.
   buffer[BUFFER_SIZE - 1] = 0;
   return std::string(buffer, strlen(buffer));
+}
+
+uint64_t timestamp_now_ms() {
+  return tiledb_rs_timestamp_now_ms();
 }
 
 }  // namespace tiledb::rs
