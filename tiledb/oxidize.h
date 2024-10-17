@@ -1,11 +1,11 @@
 /**
- * @file mgc_dict.h
+ * @file   win_constants.h
  *
  * @section LICENSE
  *
  * The MIT License
  *
- * @copyright Copyright (c) 2022-2024 TileDB, Inc.
+ * @copyright Copyright (c) 2017-2021 TileDB, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
+ *
+ * @section DESCRIPTION
+ *
+ * This file declares the Windows-specific TileDB constants.
  */
 
-#include "magic.h"
+#ifndef TILEDB_OXIDIZE_H
+#define TILEDB_OXIDIZE_H
 
-#include "tiledb/common/common.h"
+#include <string>
 
-namespace tiledb::sm::magic_dict {
+namespace tiledb::rs {
 
-/**
- * Have libmagic load data from our embedded version.
- *
- * @param magic - libmagic object obtained from magic_open()
- * @return the value libmgaic returns from magic_load_buffers().
- */
-int magic_mgc_embedded_load(magic_t magic);
+std::string get_mime(void* data, uint64_t size);
+std::string get_mime_encoding(void* data, uint64_t size);
 
-/**
- * Provides access to the internally expanded data.
- *
- * Data is stored in the library in a compressed form (approx. 270KB) and gets
- * decompressed (approx. 7MB) on the first call to this function. Subsequent
- * calls to this function will reuse the decompressed buffer.
- *
- * @return a span to the internal buffer holding the expanded data.
- */
-span<const uint8_t> expanded_buffer();
+}  // namespace tiledb::rs
 
-}  // namespace tiledb::sm::magic_dict
+#endif  // TILEDB_OXIDIZE_H

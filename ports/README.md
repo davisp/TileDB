@@ -1,6 +1,6 @@
 # Port Overlays
 
-This directory contains the custom vcpkg port overlays we're using for building dependencies. 
+This directory contains the custom vcpkg port overlays we're using for building dependencies.
 
 ## Adding a Port
 
@@ -34,5 +34,4 @@ For ease of review when patching existing ports, you are recommended to make one
 |---------------|----------------------------------------------------------------------------------------------------------------------------|
 | `aws-c-io`    | Patching to fix MinGW build failures. (https://github.com/awslabs/aws-c-io/pull/664)                                       |
 | `aws-sdk-cpp` | Patching to fix MinGW build failures, and to avoid building test-only SDKs (https://github.com/aws/aws-sdk-cpp/pull/3061). |
-| `libmagic`    | Using a custom CMake-based port that is not accepted upstream.                                                             |
 | `libfaketime` | Port does not yet exist upstream                                                                                           |
