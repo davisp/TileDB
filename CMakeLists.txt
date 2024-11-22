@@ -439,6 +439,12 @@ add_library(local_install INTERFACE)
 target_include_directories(local_install INTERFACE ${TILEDB_LOCALINSTALL_INCLUDE})
 target_include_directories(local_install INTERFACE ${CMAKE_SOURCE_DIR})
 
+##################
+# Add Rust Library
+##################
+
+add_subdirectory("rust")
+
 ############################################################
 # Enable testing and add subdirectories
 ############################################################

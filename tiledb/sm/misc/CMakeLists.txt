@@ -106,6 +106,7 @@ conclude(object_library)
 #
 commence(object_library time)
     this_target_sources(tdb_time.cc)
+    this_target_link_libraries(tiledb_rust_bridge)
 conclude(object_library)
 
 add_test_subdirectory()

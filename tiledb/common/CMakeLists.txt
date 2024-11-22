@@ -73,6 +73,7 @@ commence(object_library baseline)
     find_package(spdlog REQUIRED)
     target_link_libraries(baseline PUBLIC spdlog::spdlog)
     target_link_libraries(baseline PUBLIC common)
+    target_link_libraries(baseline PUBLIC tiledb_rust_bridge)
 conclude(object_library)
 
 #

@@ -445,7 +445,7 @@ target_include_directories(TILEDB_CORE_OBJECTS
     "${TILEDB_CORE_INCLUDE_DIR}"
     "${TILEDB_CORE_INCLUDE_DIR}/tiledb/sm/c_api"
     "${TILEDB_EXTERNALS_INCLUDE_DIRS}"
-	# to pickup <build_dir>/tiledb for capnp gen'd files
+	  # To pickup <build_dir>/tiledb for capnp gen'd files
     "${CMAKE_CURRENT_BINARY_DIR}/.."
 )
 
